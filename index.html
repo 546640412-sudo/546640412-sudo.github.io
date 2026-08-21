@@ -68,10 +68,10 @@
   <div class="wrap">
     <div class="search">
       <input id="q" type="text" inputmode="text" autocomplete="off"
-             placeholder="输入您的微信号 或 主播码" />
+             placeholder="输入微信号 / 主播码 / 手机号" />
       <button id="go">查看</button>
     </div>
-    <p class="hint">已入驻的主播：输入您填写资料时的<b>微信号</b>或卡片上的<b>主播码</b>，即可查看您的专属一码通、本人信息及关联进货单。</p>
+    <p class="hint">已入驻的主播：输入您填写资料时的<b>微信号</b>、卡片上的<b>主播码</b>或预留<b>手机号</b>，即可查看您的专属一码通、本人信息及关联进货单。</p>
     <a class="enroll-cta" id="enrollLink" href="#" target="_blank" rel="noopener">还没入驻？点此填写资料建档</a>
 
     <div id="result" class="result hidden"></div>
@@ -104,7 +104,8 @@ function search(){
   if(!key){ box.classList.add("hidden"); return; }
 
   const hit = DATA.streamers.find(s =>
-    normalize(s.code)===key || (s.wechat && normalize(s.wechat)===key)
+    normalize(s.code)===key || (s.wechat && normalize(s.wechat)===key) ||
+    (s.phone && normalize(s.phone)===key)
   );
 
   if(hit){
@@ -116,6 +117,7 @@ function search(){
         <div class="info-row"><span>主播码</span><b>${esc(hit.code)}</b></div>
         <div class="info-row"><span>昵称</span><b>${esc(hit.name||"-")}</b></div>
         <div class="info-row"><span>平台</span><b>${esc(hit.platform||"-")}</b></div>
+        <div class="info-row"><span>手机号</span><b>${esc(hit.phone||"-")}</b></div>
       </div>`;
 
     html += `<div class="sec-title">关联进货单（${hit.orders.length}）</div>`;

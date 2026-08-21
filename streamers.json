@@ -5,6 +5,7 @@
       "code": "CG-PAN-001",
       "name": "小鹿",
       "wechat": "",
+      "phone": "",
       "platform": "TikTok",
       "card": "cards/CG-PAN-001.png",
       "orders": [
@@ -22,6 +23,7 @@
       "code": "CG-PAN-002",
       "name": "阿May",
       "wechat": "",
+      "phone": "",
       "platform": "TikTok",
       "card": "cards/CG-PAN-002.png",
       "orders": []
@@ -30,6 +32,7 @@
       "code": "CG-PAN-003",
       "name": "莉莉",
       "wechat": "",
+      "phone": "",
       "platform": "小红书",
       "card": "cards/CG-PAN-003.png",
       "orders": []
@@ -38,6 +41,7 @@
       "code": "CG-PAN-004",
       "name": "Coco",
       "wechat": "",
+      "phone": "",
       "platform": "抖音",
       "card": "cards/CG-PAN-004.png",
       "orders": []
@@ -46,6 +50,7 @@
       "code": "CG-PAN-005",
       "name": "娜娜",
       "wechat": "",
+      "phone": "",
       "platform": "TikTok",
       "card": "cards/CG-PAN-005.png",
       "orders": []
@@ -54,6 +59,7 @@
       "code": "CG-PAN-006",
       "name": "潘潘",
       "wechat": "Pyyake",
+      "phone": "",
       "platform": "TikTok",
       "card": "cards/CG-PAN-006.png",
       "orders": []
