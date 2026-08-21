@@ -123,9 +123,9 @@ function search(){
 
   if(hit){
     let html = `
-      <div class="save-banner">这是您的专属一码通 · 建议截图保存本页 / 长按上方二维码存到相册，长期使用方便随时调取</div>
-      <canvas class="qr" id="hitQr"></canvas>
-      <a class="dl" id="dlBtn" href="#" download="我的专属码.png">下载保存我的专属码</a>
+      <div class="save-banner">这是您的专属一码通 · 建议截图保存本页 / 长按下方二维码存到相册</div>
+      <img class="qr" src="cards/qr-${hit.code}.png" alt="专属码 ${esc(hit.code)}" />
+      <p style="font-size:12.5px;color:#9684C4;text-align:center;margin:6px 0 0;">↑ 长按二维码保存到相册</p>
       <div class="info-card">
         <div class="info-row"><span>主播码</span><b>${esc(hit.code)}</b></div>
         <div class="info-row"><span>昵称</span><b>${esc(hit.name||"-")}</b></div>
@@ -141,17 +141,7 @@ function search(){
     }
     box.innerHTML = html;
 
-    // 生成专属码二维码(用 try 包住,CDN 慢/被拦也不会让搜索失败)
-    try {
-      var qrCanvas = document.getElementById("hitQr");
-      if (qrCanvas && typeof QRCode !== "undefined") {
-        QRCode.toCanvas(qrCanvas, PORTAL + hit.code, { width:170, margin:1 }, function(e){ if(e) console.error(e); });
-        qrCanvas.toBlob(function(b){
-          var dl = document.getElementById("dlBtn");
-          if (dl) dl.href = URL.createObjectURL(b);
-        });
-      }
-    } catch(qe){ console.error("qr fail", qe); }
+    // 二维码已预生成图片 cards/qr-${hit.code}.png(无需 JS 库)
   } else {
     box.innerHTML = `
       <div class="notfound">
