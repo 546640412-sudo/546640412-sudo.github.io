@@ -88,8 +88,8 @@
 const API_BASE = "https://cg-streamer-api.546640412.workers.dev";
 const PORTAL = "https://546640412-sudo.github.io/?code=";
 
-let DATA = {streamers:[]};
-
+let DATA = {"enroll_form_url": "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9", "streamers": [{"code": "CG-PAN-001", "name": "小鹿", "wechat": "xiaolu_wx_demo", "phone": "13800000001", "platform": "TikTok", "card": "cards/CG-PAN-001.png", "orders": [{"date": "2026-08-19", "discount": "32%", "method": "", "note": "示例·档口回传演示", "attachment": null, "photo": null}]}, {"code": "CG-PAN-002", "name": "阿May", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/CG-PAN-002.png", "orders": []}, {"code": "CG-PAN-003", "name": "莉莉", "wechat": "", "phone": "", "platform": "小红书", "card": "cards/CG-PAN-003.png", "orders": []}, {"code": "CG-PAN-004", "name": "Coco", "wechat": "", "phone": "", "platform": "抖音", "card": "cards/CG-PAN-004.png", "orders": []}, {"code": "CG-PAN-005", "name": "娜娜", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/CG-PAN-005.png", "orders": []}, {"code": "CG-PAN-006", "name": "潘潘", "wechat": "Pyyake", "phone": "13757133019", "platform": "TikTok", "card": "cards/CG-PAN-006.png", "orders": []}, {"code": "CG-PAN-007", "name": "Kayla", "wechat": "18021337956", "phone": "18021337956", "platform": "其他", "card": "cards/CG-PAN-007.png", "orders": []}, {"code": "CG-PAN-008", "name": "Fernndoexportaxor", "wechat": "15021472034", "phone": "15021472034", "platform": "TikTok", "card": "cards/CG-PAN-008.png", "orders": []}, {"code": "CG-PAN-009", "name": "66", "wechat": "u d n n c y", "phone": "13958818821", "platform": "小红书", "card": "cards/CG-PAN-009.png", "orders": []}, {"code": "CG-PAN-010", "name": "Kayla", "wechat": "18021337956", "phone": "18021337856", "platform": "其他", "card": "cards/CG-PAN-010.png", "orders": []}]};
+// 立即可用,同时后台尝试刷新 fetch(失败不影响)
 // 加载静态索引(国内稳、github.io 直连)——保证打开就能搜到
 try {
   fetch("streamers.json?t=" + Date.now())
