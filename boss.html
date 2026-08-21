@@ -121,7 +121,13 @@ function submitStreamer(){
   if(!country){ alert("请填写直播国家"); return; }
   var text = "【主播回传】主播码:" + code + " | 昵称:" + name + " | 手机:" + phone + " | 平台:" + platform + " | 国家:" + country + " | 日期:" + date + " | 备注:" + note;
   copyToClipboard(text);
-  window.location.href = RETURN_URL;
+  // 不自动跳(doc.weixin.qq.com 在外部浏览器没登录态会"获取企业信息失败"),改显示按钮
+  document.getElementById("root").innerHTML = '<div class="card" style="text-align:center;">' +
+    '<div style="font-size:18px;font-weight:700;color:#2E7D32;margin:14px 0 8px;">✓ 已提交</div>' +
+    '<p style="font-size:13.5px;color:var(--sub);">信息已复制,请在企微App中打开下方链接粘贴</p>' +
+    '<a class="btn" style="display:block;text-decoration:none;margin-top:14px;text-align:center;" href="' + RETURN_URL + '" target="_blank">前往企微主播回传表</a>' +
+    '<p class="info" style="margin-top:10px;">如点击打不开,请复制此链接到企微/微信里打开:<br/><span style="font-size:11px;color:#5E35B1;word-break:break-all;">' + RETURN_URL + '</span></p>' +
+    '</div>';
 }
 
 // ====== 档口扫码模式 ======
@@ -212,7 +218,13 @@ function submitBoss(){
   var note = document.getElementById("bNote").value.trim();
   var text = "【档口回传】主播码:" + CODE + " | 档口:" + boss.name + " | 地址+档口:" + boss.address + " | 联系方式:" + boss.phone + " | 类目:" + boss.category + " | 日期:" + date + " | 折扣:" + discount + " | 方式:" + method + " | 备注:" + note;
   copyToClipboard(text);
-  window.location.href = DK_URL;
+  // 不自动跳(doc.weixin.qq.com 在外部浏览器没登录态会"获取企业信息失败"),改显示按钮
+  document.getElementById("root").innerHTML = '<div class="card" style="text-align:center;">' +
+    '<div style="font-size:18px;font-weight:700;color:#2E7D32;margin:14px 0 8px;">✓ 已提交</div>' +
+    '<p style="font-size:13.5px;color:var(--sub);">信息已复制,请在企微App中打开下方链接粘贴</p>' +
+    '<a class="btn btn-dk" style="display:block;text-decoration:none;margin-top:14px;text-align:center;" href="' + DK_URL + '" target="_blank">前往企微档口回传表</a>' +
+    '<p class="info" style="margin-top:10px;">如点击打不开,请复制此链接到企微/微信里打开:<br/><span style="font-size:11px;color:#5E35B1;word-break:break-all;">' + DK_URL + '</span></p>' +
+    '</div>';
 }
 
 // 启动
