@@ -72,6 +72,10 @@
       </p>
       <img class="card-img" src="cards/enroll-card.png" alt="入驻卡(两码合一)" />
       <div class="btn-links">
+        <a id="goStreamer" style="background:var(--purple);" href="#" target="_blank" rel="noopener">主播回传</a>
+        <a id="goBoss" style="background:var(--purple-d);" href="#" target="_blank" rel="noopener">商家回传</a>
+      </div>
+      <div class="btn-links">
         <a id="goPortal" class="btn-portal" href="https://546640412-sudo.github.io/" target="_blank" rel="noopener">去门户查询</a>
       </div>
     </div>
@@ -124,12 +128,15 @@ document.getElementById("f").addEventListener("submit", function(e){
   }
 
   document.getElementById("rCode").textContent = code;
-  // 跳转门户按钮带手机号参数,门户打开自动搜索
+  // 三个按钮:主播回传/商家回传(带 code 跳 boss.html 自动填码),去门户查询(带手机号)
+  var ec = encodeURIComponent(code);
+  document.getElementById("goStreamer").href = "https://546640412-sudo.github.io/boss.html?role=streamer&code=" + ec;
+  document.getElementById("goBoss").href = "https://546640412-sudo.github.io/boss.html?role=boss&code=" + ec;
   var qLink = document.getElementById("goPortal");
   if (payload.phone) {
     qLink.href = "https://546640412-sudo.github.io/?q=" + encodeURIComponent(payload.phone);
   } else {
-    qLink.href = "https://546640412-sudo.github.io/?q=" + encodeURIComponent(code);
+    qLink.href = "https://546640412-sudo.github.io/?q=" + ec;
   }
   document.getElementById("f").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
