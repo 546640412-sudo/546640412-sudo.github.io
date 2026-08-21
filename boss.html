@@ -3,236 +3,227 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>CG跨境直播 · 档口回传</title>
+<title>CG跨境直播 · 中转回传</title>
 <style>
-  :root{
-    --purple:#7C4DFF; --purple-d:#5E35B1; --purple-l:#E2D8FF;
-    --bg:#F7F5FD; --ink:#2E204E; --sub:#9684C4; --line:#ECE7F7;
-    --accent:#E040FB;
-  }
+  :root{--purple:#7C4DFF;--purple-d:#5E35B1;--purple-l:#E2D8FF;--bg:#F7F5FD;--ink:#2E204E;--sub:#9684C4;--line:#ECE7F7;}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
-    background:var(--bg);color:var(--ink);min-height:100vh;}
-  .topbar{background:var(--purple);color:#fff;text-align:center;padding:20px 16px 16px;}
-  .topbar h1{margin:0;font-size:21px;letter-spacing:1px;}
-  .topbar p{margin:5px 0 0;font-size:12.5px;color:var(--purple-l);}
-  .wrap{max-width:460px;margin:0 auto;padding:18px 18px 40px;}
-  .host{background:#fff;border:1px solid var(--line);border-radius:14px;
-    padding:14px 16px;display:flex;justify-content:space-between;align-items:center;}
-  .host span{color:var(--sub);font-size:13px;}
-  .host b{color:var(--purple-d);font-size:18px;font-weight:800;letter-spacing:1px;}
-  .sec{margin:20px 2px 10px;font-size:15px;font-weight:700;color:var(--purple-d);
-    display:flex;align-items:center;gap:8px;}
-  .sec::before{content:"";width:4px;height:15px;background:var(--purple);border-radius:2px;display:inline-block;}
-  .saved{font-size:12.5px;color:var(--purple);font-weight:600;margin:8px 2px 0;}
-  .row{background:#fff;border:1px solid var(--line);border-radius:12px;
-    padding:12px 14px;margin-bottom:12px;}
-  .row label{display:block;font-size:13px;color:var(--sub);margin-bottom:6px;}
-  .row input,.row select{width:100%;border:2px solid var(--line);border-radius:10px;
-    padding:11px 12px;font-size:15px;outline:none;background:#fff;color:var(--ink);}
-  .row input:focus,.row select:focus{border-color:var(--purple);}
-  .row.locked{background:var(--purple-l);border-color:var(--purple-l);}
-  .row.locked input,.row.locked select{background:transparent;border-color:transparent;padding-left:0;}
-  .btn{width:100%;background:var(--purple);color:#fff;border:none;border-radius:12px;
-    padding:15px;font-size:16px;font-weight:800;margin-top:6px;}
-  .btn.sub{background:#fff;color:var(--purple-d);border:2px solid var(--purple);font-weight:700;}
-  .hint{color:var(--sub);font-size:12px;line-height:1.6;margin:12px 2px 0;}
-  .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:26px;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:20px 14px;}
+  .topbar{background:var(--purple);color:#fff;text-align:center;padding:18px 14px;border-radius:12px;margin-bottom:18px;}
+  .topbar h1{margin:0;font-size:20px;}
+  .topbar p{margin:6px 0 0;font-size:13px;color:var(--purple-l);}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;}
+  .row{margin-bottom:12px;}
+  .row label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px;}
+  .row input,.row select,.row textarea{width:100%;border:2px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff;color:var(--ink);box-sizing:border-box;}
+  .row input:focus,.row select:focus,.row textarea:focus{border-color:var(--purple);}
+  .row input[readonly]{background:#F7F5FD;color:#5E35B1;font-weight:700;}
+  .btn{width:100%;background:var(--purple);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;margin-top:8px;}
+  .btn:disabled{opacity:.6;}
+  .btn-dk{background:var(--purple-d);}
+  .info{font-size:12.5px;color:var(--sub);line-height:1.7;margin-top:10px;}
+  .err{color:#d33;font-size:13px;margin-top:8px;}
   .hidden{display:none;}
-  .merchant-card{background:var(--purple-l);border:1px solid var(--purple-l);border-radius:12px;
-    padding:12px 14px;margin-bottom:12px;font-size:13px;line-height:1.7;}
-  .merchant-card b{color:var(--purple-d);font-size:15px;}
-  .tag{display:inline-block;background:var(--purple);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px;}
+  .streamer-code{font-size:22px;font-weight:800;color:var(--purple);letter-spacing:1px;text-align:center;padding:12px;background:#F7F5FD;border-radius:10px;border:2px dashed var(--purple-l);margin-bottom:14px;}
+  .archive{background:#F7F5FD;border:1px solid var(--purple-l);border-radius:10px;padding:12px;font-size:13px;line-height:1.7;margin-bottom:14px;}
+  .archive b{color:var(--purple-d);font-size:15px;}
+  .success{background:#E8F5E9;color:#2E7D32;padding:10px;border-radius:10px;font-size:13px;margin-top:10px;text-align:center;}
 </style>
 </head>
 <body>
-  <div class="topbar">
-    <h1>CG跨境直播</h1>
-    <p>档口回传 · 一扫自动对齐</p>
-  </div>
 
-  <div class="wrap">
-    <!-- 自动对齐的主播编号（来自扫码 URL） -->
-    <div class="host">
-      <span>本单主播编号</span>
-      <b id="hostCode">—</b>
-    </div>
+<div class="topbar">
+  <h1 id="title">CG跨境直播</h1>
+  <p id="subtitle">扫码中转 · 自动填主播码</p>
+</div>
 
-    <!-- 商铺选择：从档案库自动带出 -->
-    <div class="sec">选择我的商铺</div>
-    <div class="row">
-      <label>商铺名称</label>
-      <select id="merchantSelect">
-        <option value="">— 请选择或搜索 —</option>
-      </select>
-    </div>
-    <div class="merchant-card hidden" id="merchantCard">
-      <b id="mName">—</b><span class="tag" id="mCategory">—</span><br/>
-      地址：<span id="mAddress">—</span><br/>
-      对接人：<span id="mContact">—</span> / <span id="mPhone">—</span>
-    </div>
-
-    <!-- 老板娘身份：首次填写，之后自动识别 -->
-    <div class="sec">我的档口信息</div>
-    <div class="row" id="bossRow">
-      <label>地址+档口号</label>
-      <input id="stall" placeholder="如 义乌国际商贸城六区一楼3街4单元71753" autocomplete="off" />
-      <label style="margin-top:10px;">联系方式</label>
-      <input id="contact" placeholder="微信 / 手机号" autocomplete="off" />
-      <button class="btn sub" id="saveBtn" style="margin-top:12px;">保存我的档口信息</button>
-    </div>
-    <p class="saved hidden" id="savedTip">✓ 已记住，下次扫码自动识别，不用再填</p>
-
-    <!-- 回传内容 -->
-    <div class="sec">回传内容</div>
-    <div class="row">
-      <label>直播日期</label>
-      <input id="liveDate" type="date" />
-    </div>
-    <div class="row">
-      <label>折扣比例</label>
-      <input id="discount" placeholder="如 0.85 / 8.5折" autocomplete="off" />
-    </div>
-    <div class="row">
-      <label>开单照片</label>
-      <input id="photoNote" placeholder="拍照后在此备注照片已发/上传" autocomplete="off" />
-    </div>
-    <div class="row">
-      <label>配货单链接</label>
-      <input id="attach" placeholder="配货单表格链接（如有）" autocomplete="off" />
-    </div>
-    <div class="row">
-      <label>回传方式</label>
-      <select id="method">
-        <option value="拍照上传">拍照上传</option>
-        <option value="表格导入">表格导入</option>
-      </select>
-    </div>
-    <div class="row">
-      <label>备注</label>
-      <input id="note" placeholder="其他说明" autocomplete="off" />
-    </div>
-
-    <button class="btn" id="submitBtn">提交回传</button>
-    <p class="hint" id="hint">提交后会自动带上主播编号、商铺名称与您的地址+档口号/联系方式。当前先复制整单信息并跳转到企微回传表完成提交；后续将升级为一键直写。</p>
-
-    <p class="foot">CG跨境直播中台 · 一扫对齐</p>
-  </div>
+<div id="root"></div>
 
 <script>
-  // ① 从扫码 URL 自动读出主播编号
-  const params = new URLSearchParams(location.search);
-  const hostCode = params.get("code") || "";
-  document.getElementById("hostCode").textContent = hostCode || "（未识别，请重新扫主播卡上的③码）";
+var P = new URLSearchParams(location.search);
+var CODE = P.get("code") || "";
+var ROLE = P.get("role") || "boss";  // streamer=主播, boss=档口
+var RETURN_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_707e78";
+var DK_URL    = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5eebb9";
+var STALLS = [];
 
-  // ② 加载商户档案库
-  let MERCHANTS = [];
-  fetch("merchants.json")
-    .then(r => r.json())
-    .then(d => { MERCHANTS = d.merchants || []; renderMerchantOptions(); })
-    .catch(e => console.error("商户档案加载失败", e));
+function esc(s){ return String(s||"").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
 
-  const merchantSelect = document.getElementById("merchantSelect");
-  const merchantCard = document.getElementById("merchantCard");
-  const stallEl = document.getElementById("stall");
-  const contactEl = document.getElementById("contact");
+function loadStalls(cb){
+  fetch("stalls.json?t=" + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(d){ STALLS = (d && d.stalls) || []; cb(); })
+    .catch(function(e){ console.warn("stalls load fail", e); cb(); });
+}
 
-  function renderMerchantOptions() {
-    MERCHANTS.forEach(m => {
-      const opt = document.createElement("option");
-      opt.value = m.name;
-      opt.textContent = m.name + (m.address ? `（${m.address}）` : "");
-      merchantSelect.appendChild(opt);
-    });
+function getBossInfo(code){
+  var map = {};
+  try { map = JSON.parse(localStorage.getItem("cg_boss_info") || "{}"); } catch(e){}
+  return map[code] || null;
+}
+function saveBossInfo(code, info){
+  var map = {};
+  try { map = JSON.parse(localStorage.getItem("cg_boss_info") || "{}"); } catch(e){}
+  map[code] = info;
+  localStorage.setItem("cg_boss_info", JSON.stringify(map));
+}
+
+function getStreamerLocal(code){
+  var news = [];
+  try { news = JSON.parse(localStorage.getItem("cg_new_streamers") || "[]"); } catch(e){}
+  return news.find(function(x){ return x.code === code; }) || null;
+}
+
+function copyToClipboard(text){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){}, function(){ fallbackCopy(text); });
+  } else { fallbackCopy(text); }
+  function fallbackCopy(t){
+    var ta = document.createElement("textarea");
+    ta.value = t;
+    ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand("copy"); } catch(e){}
+    document.body.removeChild(ta);
   }
+}
 
-  merchantSelect.addEventListener("change", () => {
-    const name = merchantSelect.value;
-    const m = MERCHANTS.find(x => x.name === name);
-    if (m) {
-      document.getElementById("mName").textContent = m.name;
-      document.getElementById("mCategory").textContent = m.category || "—";
-      document.getElementById("mAddress").textContent = m.address || "—";
-      document.getElementById("mContact").textContent = m.contact_name || "—";
-      document.getElementById("mPhone").textContent = m.contact_phone || "—";
-      merchantCard.classList.remove("hidden");
-      // 自动预填地址到地址+档口号（老板娘可在此基础上修改）
-      if (m.address && !stallEl.value.trim()) {
-        stallEl.value = m.address;
-      }
-      // 预填联系方式（如果还没保存过老板娘自己的联系方式）
-      const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
-      if (m.contact_phone && !prof.contact && !contactEl.value.trim()) {
-        contactEl.value = m.contact_phone;
-      }
+// ====== 主播扫码模式 ======
+function renderStreamer(){
+  document.getElementById("title").textContent = "主播扫码回传";
+  document.getElementById("subtitle").textContent = "主播码已自动填好,填完提交即可";
+  var info = getStreamerLocal(CODE) || {code: CODE, name: "", phone: ""};
+  var html = '';
+  html += '<div class="streamer-code">主播码 ' + esc(CODE) + '</div>';
+  html += '<div class="card">';
+  html += '<div class="row"><label>昵称</label><input id="bName" value="' + esc(info.name||"") + '" placeholder="自动带出,可修改"></div>';
+  html += '<div class="row"><label>手机号</label><input id="bPhone" value="' + esc(info.phone||"") + '" placeholder="便于查回"></div>';
+  html += '<div class="row"><label>直播日期</label><input id="bDate" placeholder="如:2026-08-21"></div>';
+  html += '<div class="row"><label>折扣</label><input id="bDiscount" placeholder="如:30%"></div>';
+  html += '<div class="row"><label>回传方式</label><select id="bMethod"><option value="">请选择</option><option>导入</option><option>拍照</option></select></div>';
+  html += '<div class="row"><label>备注</label><textarea id="bNote" rows="2"></textarea></div>';
+  html += '<button class="btn" id="submitBtn">提交并复制信息跳转企微</button>';
+  html += '<p class="info">提交后自动复制本单信息到剪贴板,并跳到企微主播回传表(707e78),在表单里<strong>长按粘贴</strong>即可。</p>';
+  html += '</div>';
+  document.getElementById("root").innerHTML = html;
+  document.getElementById("submitBtn").addEventListener("click", submitStreamer);
+}
+
+function submitStreamer(){
+  var code = CODE;
+  var name = document.getElementById("bName").value.trim();
+  var phone = document.getElementById("bPhone").value.trim();
+  var date = document.getElementById("bDate").value.trim();
+  var discount = document.getElementById("bDiscount").value.trim();
+  var method = document.getElementById("bMethod").value;
+  var note = document.getElementById("bNote").value.trim();
+  var text = "【主播回传】主播码:" + code + " | 昵称:" + name + " | 手机:" + phone + " | 日期:" + date + " | 折扣:" + discount + " | 方式:" + method + " | 备注:" + note;
+  copyToClipboard(text);
+  window.location.href = RETURN_URL;
+}
+
+// ====== 档口扫码模式 ======
+function renderBoss(){
+  document.getElementById("title").textContent = "档口扫码回传";
+  document.getElementById("subtitle").textContent = "关联主播 " + CODE + " · 自动带出档口信息";
+  var boss = getBossInfo(CODE);
+  if(!boss){
+    renderBossArchive();
+  } else {
+    renderBossForm(boss);
+  }
+}
+
+function renderBossArchive(){
+  var html = '';
+  html += '<div class="archive"><b>首次扫码需先建档</b><br/>填一次,后续扫码自动带出。地址和联系方式是后期绩效基础,务必填写。</div>';
+  html += '<div class="card">';
+  html += '<div class="row"><label>档口名</label>';
+  html += '<select id="aName"><option value="">从商户汇总选(自动带出)或手动输入</option>';
+  STALLS.forEach(function(s){
+    html += '<option value="' + esc(s.name) + '" data-addr="' + esc(s.address||"") + '" data-cat="' + esc(s.category||"") + '" data-phone="' + esc(s.phone||"") + '" data-contact="' + esc(s.contact||"") + '">' + esc(s.name) + ' · ' + esc(s.category||"") + '</option>';
+  });
+  html += '<option value="__manual__">其他(手动输入档口名)</option>';
+  html += '</select>';
+  html += '<input id="aNameManual" class="hidden" style="margin-top:6px;" placeholder="手动输入档口名"></div>';
+  html += '<div class="row"><label>地址 + 档口号</label><input id="aAddr" placeholder="如:国际商贸城六区一楼3街 4单元71753"></div>';
+  html += '<div class="row"><label>联系方式(手机/微信)</label><input id="aPhone" placeholder="便于后期绩效联系"></div>';
+  html += '<div class="row"><label>主营类目</label><input id="aCat" placeholder="如:珠宝饰品"></div>';
+  html += '<button class="btn btn-dk" id="archiveBtn">建档并继续回传</button>';
+  html += '</div>';
+  document.getElementById("root").innerHTML = html;
+
+  var sel = document.getElementById("aName");
+  sel.addEventListener("change", function(){
+    var opt = sel.options[sel.selectedIndex];
+    if(opt.value === "__manual__"){
+      document.getElementById("aNameManual").classList.remove("hidden");
+      ["aAddr","aPhone","aCat"].forEach(function(id){ document.getElementById(id).value = ""; });
+    } else if(opt.value){
+      document.getElementById("aNameManual").classList.add("hidden");
+      document.getElementById("aAddr").value = opt.getAttribute("data-addr") || "";
+      document.getElementById("aPhone").value = opt.getAttribute("data-phone") || "";
+      document.getElementById("aCat").value = opt.getAttribute("data-cat") || "";
     } else {
-      merchantCard.classList.add("hidden");
+      document.getElementById("aNameManual").classList.add("hidden");
     }
   });
 
-  // ③ 老板娘身份：本地记忆，自动识别
-  const PROFILE_KEY = "cg_boss_profile";
-  const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
-  if (prof.stall) stallEl.value = prof.stall;
-  if (prof.contact) contactEl.value = prof.contact;
-  if (prof.merchantName) {
-    merchantSelect.value = prof.merchantName;
-    merchantSelect.dispatchEvent(new Event("change"));
-  }
-  if (prof.stall && prof.contact) {
-    document.getElementById("savedTip").classList.remove("hidden");
-  }
-
-  document.getElementById("saveBtn").addEventListener("click", () => {
-    const stall = stallEl.value.trim();
-    const contact = contactEl.value.trim();
-    if (!stall || !contact) { alert("地址+档口号和联系方式都要填哦"); return; }
-    const save = { stall, contact };
-    if (merchantSelect.value) save.merchantName = merchantSelect.value;
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(save));
-    document.getElementById("savedTip").classList.remove("hidden");
-    alert("已记住，下次扫码自动识别");
+  document.getElementById("archiveBtn").addEventListener("click", function(){
+    var sel = document.getElementById("aName");
+    var name = sel.value === "__manual__" ? document.getElementById("aNameManual").value.trim() : sel.value;
+    var addr = document.getElementById("aAddr").value.trim();
+    var phone = document.getElementById("aPhone").value.trim();
+    var cat = document.getElementById("aCat").value.trim();
+    if(!name || !addr){ alert("档口名和地址必填"); return; }
+    saveBossInfo(CODE, {name: name, address: addr, phone: phone, category: cat, ts: Date.now()});
+    renderBossForm({name: name, address: addr, phone: phone, category: cat});
   });
+}
 
-  // ④ 提交：组装整单
-  const DK_FORM_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5eebb9";
-  document.getElementById("submitBtn").addEventListener("click", () => {
-    const stall = stallEl.value.trim();
-    const contact = contactEl.value.trim();
-    if (!hostCode) { alert("未识别到主播编号，请重新扫主播卡上的③码"); return; }
-    if (!stall || !contact) { alert("请先填写并保存您的地址+档口号和联系方式"); return; }
+function renderBossForm(boss){
+  var html = '';
+  html += '<div class="archive">';
+  html += '<b>' + esc(boss.name) + '</b><br/>';
+  html += '地址+档口:' + esc(boss.address||"-") + '<br/>';
+  html += '联系方式:' + esc(boss.phone||"-") + '<br/>';
+  html += '类目:' + esc(boss.category||"-");
+  html += '</div>';
+  html += '<div class="card">';
+  html += '<div class="row"><label>主播码(关联)</label><input value="' + esc(CODE) + '" readonly></div>';
+  html += '<div class="row"><label>本次直播日期</label><input id="bDate" placeholder="如:2026-08-21"></div>';
+  html += '<div class="row"><label>折扣</label><input id="bDiscount" placeholder="如:30%"></div>';
+  html += '<div class="row"><label>开单照片链接(选填)</label><input id="bPhoto" placeholder="微信上传后粘贴链接"></div>';
+  html += '<div class="row"><label>配货单链接(选填)</label><input id="bLink" placeholder="如有"></div>';
+  html += '<div class="row"><label>备注</label><textarea id="bNote" rows="2"></textarea></div>';
+  html += '<button class="btn btn-dk" id="submitBtn">提交并复制信息跳转企微</button>';
+  html += '<p class="info">已建档。提交后自动复制本单信息(含主播码+档口档案)到剪贴板,跳到企微档口回传表(5eebb9),<strong>长按粘贴</strong>即可。</p>';
+  html += '</div>';
+  document.getElementById("root").innerHTML = html;
+  document.getElementById("submitBtn").addEventListener("click", submitBoss);
+}
 
-    const payload = {
-      主播编号: hostCode,
-      商铺名称: merchantSelect.value || "",
-      "地址档口号": stall,
-      联系方式: contact,
-      直播日期: document.getElementById("liveDate").value || "",
-      折扣比例: document.getElementById("discount").value || "",
-      开单照片: document.getElementById("photoNote").value || "",
-      配货单链接: document.getElementById("attach").value || "",
-      回传方式: document.getElementById("method").value,
-      备注: document.getElementById("note").value || "",
-    };
+function submitBoss(){
+  var boss = getBossInfo(CODE);
+  var date = document.getElementById("bDate").value.trim();
+  var discount = document.getElementById("bDiscount").value.trim();
+  var photo = document.getElementById("bPhoto").value.trim();
+  var link = document.getElementById("bLink").value.trim();
+  var note = document.getElementById("bNote").value.trim();
+  var text = "【档口回传】主播码:" + CODE + " | 档口:" + boss.name + " | 地址+档口:" + boss.address + " | 联系方式:" + boss.phone + " | 类目:" + boss.category + " | 日期:" + date + " | 折扣:" + discount + " | 开单照片:" + photo + " | 配货单:" + link + " | 备注:" + note;
+  copyToClipboard(text);
+  window.location.href = DK_URL;
+}
 
-    if (window.CG_BOSS_API) {
-      fetch(window.CG_BOSS_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      }).then(r => {
-        if (r.ok) alert("✓ 已提交（自动写入）");
-        else alert("提交失败，请改用下方方式");
-      }).catch(() => alert("网络异常，请改用下方方式"));
-      return;
-    }
-
-    const text = Object.entries(payload)
-      .map(([k, v]) => `${k}：${v}`).join("\n");
-    navigator.clipboard?.writeText(text).catch(() => {});
-    alert("已复制本单信息，请在打开的企微回传表中粘贴提交：\n\n" + text);
-    window.open(DK_FORM_URL, "_blank");
-  });
+// 启动
+if(!CODE){
+  document.getElementById("root").innerHTML = '<div class="card" style="text-align:center;color:#d33;">缺少主播码参数(?code=CG-PAN-xxx),请通过扫码进入。</div>';
+} else if(ROLE === "streamer"){
+  renderStreamer();
+  loadStalls(function(){});  // 主播模式不需 stalls,但保持加载
+} else {
+  loadStalls(function(){ renderBoss(); });
+}
 </script>
 </body>
 </html>
