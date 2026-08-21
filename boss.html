@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>CG跨境直播 · 档口回传</title>
+<style>
+  :root{
+    --purple:#7C4DFF; --purple-d:#5E35B1; --purple-l:#E2D8FF;
+    --bg:#F7F5FD; --ink:#2E204E; --sub:#9684C4; --line:#ECE7F7;
+    --accent:#E040FB;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);min-height:100vh;}
+  .topbar{background:var(--purple);color:#fff;text-align:center;padding:20px 16px 16px;}
+  .topbar h1{margin:0;font-size:21px;letter-spacing:1px;}
+  .topbar p{margin:5px 0 0;font-size:12.5px;color:var(--purple-l);}
+  .wrap{max-width:460px;margin:0 auto;padding:18px 18px 40px;}
+  .host{background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;display:flex;justify-content:space-between;align-items:center;}
+  .host span{color:var(--sub);font-size:13px;}
+  .host b{color:var(--purple-d);font-size:18px;font-weight:800;letter-spacing:1px;}
+  .sec{margin:20px 2px 10px;font-size:15px;font-weight:700;color:var(--purple-d);
+    display:flex;align-items:center;gap:8px;}
+  .sec::before{content:"";width:4px;height:15px;background:var(--purple);border-radius:2px;display:inline-block;}
+  .saved{font-size:12.5px;color:var(--purple);font-weight:600;margin:8px 2px 0;}
+  .row{background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:12px 14px;margin-bottom:12px;}
+  .row label{display:block;font-size:13px;color:var(--sub);margin-bottom:6px;}
+  .row input,.row select{width:100%;border:2px solid var(--line);border-radius:10px;
+    padding:11px 12px;font-size:15px;outline:none;background:#fff;color:var(--ink);}
+  .row input:focus,.row select:focus{border-color:var(--purple);}
+  .row.locked{background:var(--purple-l);border-color:var(--purple-l);}
+  .btn{width:100%;background:var(--purple);color:#fff;border:none;border-radius:12px;
+    padding:15px;font-size:16px;font-weight:800;margin-top:6px;}
+  .btn.sub{background:#fff;color:var(--purple-d);border:2px solid var(--purple);font-weight:700;}
+  .hint{color:var(--sub);font-size:12px;line-height:1.6;margin:12px 2px 0;}
+  .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:26px;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>CG跨境直播</h1>
+    <p>档口回传 · 一扫自动对齐</p>
+  </div>
+
+  <div class="wrap">
+    <!-- 自动对齐的主播编号（来自扫码 URL） -->
+    <div class="host">
+      <span>本单主播编号</span>
+      <b id="hostCode">—</b>
+    </div>
+
+    <!-- 老板娘身份：首次填写，之后自动识别 -->
+    <div class="sec">我的档口信息</div>
+    <div class="row" id="bossRow">
+      <label>档口号</label>
+      <input id="stall" placeholder="如 A12 / 义乌国际商贸城二区3楼" autocomplete="off" />
+      <label style="margin-top:10px;">联系方式</label>
+      <input id="contact" placeholder="微信 / 手机号" autocomplete="off" />
+      <button class="btn sub" id="saveBtn" style="margin-top:12px;">保存我的档口信息</button>
+    </div>
+    <p class="saved hidden" id="savedTip">✓ 已记住，下次扫码自动识别，不用再填</p>
+
+    <!-- 回传内容 -->
+    <div class="sec">回传内容</div>
+    <div class="row">
+      <label>直播日期</label>
+      <input id="liveDate" type="date" />
+    </div>
+    <div class="row">
+      <label>折扣比例</label>
+      <input id="discount" placeholder="如 0.85 / 8.5折" autocomplete="off" />
+    </div>
+    <div class="row">
+      <label>开单照片</label>
+      <input id="photoNote" placeholder="拍照后在此备注照片已发/上传" autocomplete="off" />
+    </div>
+    <div class="row">
+      <label>配货单链接</label>
+      <input id="attach" placeholder="配货单表格链接（如有）" autocomplete="off" />
+    </div>
+    <div class="row">
+      <label>回传方式</label>
+      <select id="method">
+        <option value="拍照上传">拍照上传</option>
+        <option value="表格导入">表格导入</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>备注</label>
+      <input id="note" placeholder="其他说明" autocomplete="off" />
+    </div>
+
+    <button class="btn" id="submitBtn">提交回传</button>
+    <p class="hint" id="hint">提交后会自动带上主播编号与您的档口号/联系方式。当前先复制整单信息并跳转到企微回传表完成提交；后续将升级为一键直写。</p>
+
+    <p class="foot">CG跨境直播中台 · 一扫对齐</p>
+  </div>
+
+<script>
+  // ① 从扫码 URL 自动读出主播编号
+  const params = new URLSearchParams(location.search);
+  const hostCode = params.get("code") || "";
+  document.getElementById("hostCode").textContent = hostCode || "（未识别，请重新扫主播卡上的③码）";
+
+  // ② 老板娘身份：本地记忆，自动识别
+  const PROFILE_KEY = "cg_boss_profile";
+  const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+  const stallEl = document.getElementById("stall");
+  const contactEl = document.getElementById("contact");
+  if (prof.stall) stallEl.value = prof.stall;
+  if (prof.contact) contactEl.value = prof.contact;
+  if (prof.stall && prof.contact) {
+    document.getElementById("savedTip").classList.remove("hidden");
+  }
+
+  document.getElementById("saveBtn").addEventListener("click", () => {
+    const stall = stallEl.value.trim();
+    const contact = contactEl.value.trim();
+    if (!stall || !contact) { alert("档口号和联系方式都要填哦"); return; }
+    localStorage.setItem(PROFILE_KEY, JSON.stringify({ stall, contact }));
+    document.getElementById("savedTip").classList.remove("hidden");
+    alert("已记住，下次扫码自动识别");
+  });
+
+  // ③ 提交：组装整单（含自动带出的主播编号 + 老板娘档口号/联系方式）
+  const DK_FORM_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5eebb9";
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    const stall = stallEl.value.trim();
+    const contact = contactEl.value.trim();
+    if (!hostCode) { alert("未识别到主播编号，请重新扫主播卡上的③码"); return; }
+    if (!stall || !contact) { alert("请先填写并保存您的档口号和联系方式"); return; }
+
+    const payload = {
+      主播编号: hostCode,
+      档口号: stall,
+      联系方式: contact,
+      直播日期: document.getElementById("liveDate").value || "",
+      折扣比例: document.getElementById("discount").value || "",
+      开单照片: document.getElementById("photoNote").value || "",
+      配货单链接: document.getElementById("attach").value || "",
+      回传方式: document.getElementById("method").value,
+      备注: document.getElementById("note").value || "",
+    };
+
+    // 若已部署后端直写接口，优先直写；否则复制+跳企微（半自动兜底）
+    if (window.CG_BOSS_API) {
+      fetch(window.CG_BOSS_API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      }).then(r => {
+        if (r.ok) alert("✓ 已提交（自动写入）");
+        else alert("提交失败，请改用下方方式");
+      }).catch(() => alert("网络异常，请改用下方方式"));
+      return;
+    }
+
+    const text = Object.entries(payload)
+      .map(([k, v]) => `${k}：${v}`).join("\n");
+    navigator.clipboard?.writeText(text).catch(() => {});
+    alert("已复制本单信息，请在打开的企微回传表中粘贴提交：\n\n" + text);
+    window.open(DK_FORM_URL, "_blank");
+  });
+</script>
+</body>
+</html>
