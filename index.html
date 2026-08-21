@@ -129,10 +129,11 @@ function search(){
 document.getElementById("go").addEventListener("click", search);
 document.getElementById("q").addEventListener("keydown", function(e){ if(e.key==="Enter") search(); });
 
-// URL ?code= 直接查询
+// URL ?code= 或 ?q= 直接查询(支持入驻后跳转带手机号自动搜索)
 (function(){
-  var c = new URLSearchParams(location.search).get("code");
-  if(c){ document.getElementById("q").value = c; search(); }
+  var p = new URLSearchParams(location.search);
+  var q = p.get("q") || p.get("code");
+  if(q){ document.getElementById("q").value = q; search(); }
 })();
 </script>
 </body>
