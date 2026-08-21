@@ -56,8 +56,8 @@
     <!-- 老板娘身份：首次填写，之后自动识别 -->
     <div class="sec">我的档口信息</div>
     <div class="row" id="bossRow">
-      <label>档口号</label>
-      <input id="stall" placeholder="如 A12 / 义乌国际商贸城二区3楼" autocomplete="off" />
+      <label>地址+档口号</label>
+      <input id="stall" placeholder="如 义乌国际商贸城二区3楼 A12" autocomplete="off" />
       <label style="margin-top:10px;">联系方式</label>
       <input id="contact" placeholder="微信 / 手机号" autocomplete="off" />
       <button class="btn sub" id="saveBtn" style="margin-top:12px;">保存我的档口信息</button>
@@ -95,7 +95,7 @@
     </div>
 
     <button class="btn" id="submitBtn">提交回传</button>
-    <p class="hint" id="hint">提交后会自动带上主播编号与您的档口号/联系方式。当前先复制整单信息并跳转到企微回传表完成提交；后续将升级为一键直写。</p>
+    <p class="hint" id="hint">提交后会自动带上主播编号与您的地址+档口号/联系方式。当前先复制整单信息并跳转到企微回传表完成提交；后续将升级为一键直写。</p>
 
     <p class="foot">CG跨境直播中台 · 一扫对齐</p>
   </div>
@@ -120,7 +120,7 @@
   document.getElementById("saveBtn").addEventListener("click", () => {
     const stall = stallEl.value.trim();
     const contact = contactEl.value.trim();
-    if (!stall || !contact) { alert("档口号和联系方式都要填哦"); return; }
+    if (!stall || !contact) { alert("地址+档口号和联系方式都要填哦"); return; }
     localStorage.setItem(PROFILE_KEY, JSON.stringify({ stall, contact }));
     document.getElementById("savedTip").classList.remove("hidden");
     alert("已记住，下次扫码自动识别");
@@ -132,11 +132,11 @@
     const stall = stallEl.value.trim();
     const contact = contactEl.value.trim();
     if (!hostCode) { alert("未识别到主播编号，请重新扫主播卡上的③码"); return; }
-    if (!stall || !contact) { alert("请先填写并保存您的档口号和联系方式"); return; }
+    if (!stall || !contact) { alert("请先填写并保存您的地址+档口号和联系方式"); return; }
 
     const payload = {
       主播编号: hostCode,
-      档口号: stall,
+      "地址档口号": stall,
       联系方式: contact,
       直播日期: document.getElementById("liveDate").value || "",
       折扣比例: document.getElementById("discount").value || "",
