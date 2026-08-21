@@ -63,8 +63,8 @@
   </div>
 <script>
 var DATA = {"enroll_form_url": "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9", "streamers": [{"code": "CG-PAN-001", "name": "小鹿", "wechat": "xiaolu_wx_demo", "phone": "13800000001", "platform": "TikTok", "card": "cards/CG-PAN-001.png", "orders": [{"date": "2026-08-19", "discount": "32%", "method": "", "note": "示例·档口回传演示", "attachment": null, "photo": null}]}, {"code": "CG-PAN-002", "name": "阿May", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/CG-PAN-002.png", "orders": []}, {"code": "CG-PAN-003", "name": "莉莉", "wechat": "", "phone": "", "platform": "小红书", "card": "cards/CG-PAN-003.png", "orders": []}, {"code": "CG-PAN-004", "name": "Coco", "wechat": "", "phone": "", "platform": "抖音", "card": "cards/CG-PAN-004.png", "orders": []}, {"code": "CG-PAN-005", "name": "娜娜", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/CG-PAN-005.png", "orders": []}, {"code": "CG-PAN-006", "name": "潘潘", "wechat": "Pyyake", "phone": "13757133019", "platform": "TikTok", "card": "cards/CG-PAN-006.png", "orders": []}, {"code": "CG-PAN-007", "name": "Kayla", "wechat": "18021337956", "phone": "18021337956", "platform": "其他", "card": "cards/CG-PAN-007.png", "orders": []}, {"code": "CG-PAN-008", "name": "Fernndoexportaxor", "wechat": "15021472034", "phone": "15021472034", "platform": "TikTok", "card": "cards/CG-PAN-008.png", "orders": []}, {"code": "CG-PAN-009", "name": "66", "wechat": "u d n n c y", "phone": "13958818821", "platform": "小红书", "card": "cards/CG-PAN-009.png", "orders": []}, {"code": "CG-PAN-010", "name": "Kayla", "wechat": "18021337956", "phone": "18021337856", "platform": "其他", "card": "cards/CG-PAN-010.png", "orders": []}]};
-var RETURN_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_707e78";
-var DK_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5eebb9";
+var RETURN_URL = "https://546640412-sudo.github.io/boss.html?role=streamer&code=";
+var DK_URL = "https://546640412-sudo.github.io/boss.html?role=boss&code=";
 
 // 合并本地新主播(入驻表单前端生成的,自动入搜索索引)
 try {
@@ -95,12 +95,14 @@ function search(){
   });
 
   if(hit){
-    var cardImg = hit.card ? '<img class="card-img" src="' + esc(hit.card) + '" alt="专属码卡" />' : '';
+    // 老主播用专属卡片,新主播(无 card 字段)用通用合并卡(enroll-card)兜底
+    var cardSrc = hit.card || "cards/enroll-card.png";
+    var cardImg = '<img class="card-img" src="' + esc(cardSrc) + '" alt="专属码卡" onerror="this.onerror=null;this.src=\'cards/enroll-card.png\'" />';
     var html = '<div class="save-banner">这是您的专属一码通 · 长按卡片图保存 / 点下方按钮回传</div>';
     html += cardImg;
     html += '<div class="btn-links">' +
-      '<a class="btn-return" href="' + RETURN_URL + '" target="_blank" rel="noopener">主播回传</a>' +
-      '<a class="btn-dk" href="' + DK_URL + '" target="_blank" rel="noopener">商家回传</a>' +
+      '<a class="btn-return" href="' + RETURN_URL + esc(hit.code) + '" target="_blank" rel="noopener">主播回传</a>' +
+      '<a class="btn-dk" href="' + DK_URL + esc(hit.code) + '" target="_blank" rel="noopener">商家回传</a>' +
       '</div>';
     html += '<div class="info-card">' +
       '<div class="info-row"><span>主播码</span><b>' + esc(hit.code) + '</b></div>' +
