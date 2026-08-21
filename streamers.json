@@ -4,8 +4,8 @@
     {
       "code": "CG-PAN-001",
       "name": "小鹿",
-      "wechat": "",
-      "phone": "",
+      "wechat": "xiaolu_wx_demo",
+      "phone": "13800000001",
       "platform": "TikTok",
       "card": "cards/CG-PAN-001.png",
       "orders": [
@@ -59,9 +59,45 @@
       "code": "CG-PAN-006",
       "name": "潘潘",
       "wechat": "Pyyake",
-      "phone": "",
+      "phone": "13757133019",
       "platform": "TikTok",
       "card": "cards/CG-PAN-006.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-007",
+      "name": "Kayla",
+      "wechat": "18021337956",
+      "phone": "18021337956",
+      "platform": "其他",
+      "card": "cards/CG-PAN-007.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-008",
+      "name": "Fernndoexportaxor",
+      "wechat": "15021472034",
+      "phone": "15021472034",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-008.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-009",
+      "name": "66",
+      "wechat": "u d n n c y",
+      "phone": "13958818821",
+      "platform": "小红书",
+      "card": "cards/CG-PAN-009.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-010",
+      "name": "Kayla",
+      "wechat": "18021337956",
+      "phone": "18021337856",
+      "platform": "其他",
+      "card": "cards/CG-PAN-010.png",
       "orders": []
     }
   ]
