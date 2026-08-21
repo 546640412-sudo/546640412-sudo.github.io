@@ -90,17 +90,22 @@ const PORTAL = "https://546640412-sudo.github.io/?code=";
 
 let DATA = {streamers:[]};
 
-// 实时读 Worker；失败则降级读 GitHub Pages 上的静态索引（国内访问稳定）
-function loadData(){
-  return fetch(API_BASE + "/api/streamers?t=" + Date.now())
+// 1) 先加载静态索引(国内稳、快)——保证打开就能搜到
+fetch("streamers.json?t=" + Date.now())
+  .then(r=>r.json())
+  .then(d=>{ DATA = d && d.streamers ? d : {streamers:[]}; })
+  .catch(e=>console.error("静态索引加载失败", e));
+
+// 2) 后台尝试实时 Worker(带4秒超时,成功则覆盖为最新数据;失败/超时不影响查询)
+(function(){
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), 4000);
+  fetch(API_BASE + "/api/streamers?t=" + Date.now(), {signal: ctrl.signal})
     .then(r=>{ if(!r.ok) throw new Error("worker "+r.status); return r.json(); })
-    .catch(e=>{
-      console.warn("实时接口暂不可达,降级读取本地索引:", e.message);
-      return fetch("streamers.json?t=" + Date.now()).then(r=>r.json());
-    })
-    .catch(e=>{ console.error("本地也失败", e); return {streamers:[]}; });
-}
-loadData().then(d=>{ DATA = d && d.streamers ? d : {streamers:[]}; });
+    .then(d=>{ if(d && d.streamers) DATA = d; })
+    .catch(e=>console.warn("实时接口不可达,继续用静态数据", e))
+    .finally(()=>clearTimeout(timer));
+})();
 
 function normalize(s){ return (s||"").trim().toLowerCase(); }
 function esc(s){ return (s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
