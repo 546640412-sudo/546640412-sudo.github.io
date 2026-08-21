@@ -85,7 +85,7 @@
 <script>
 let DATA = {streamers:[]};
 let ENROLL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9";
-fetch("streamers.json").then(r=>r.json()).then(d=>{
+fetch("streamers.json?t="+Date.now()).then(r=>r.json()).then(d=>{
   DATA=d;
   if(d.enroll_form_url) ENROLL = d.enroll_form_url;
   document.getElementById("enrollBtn").href = ENROLL;
