@@ -32,12 +32,17 @@
     padding:11px 12px;font-size:15px;outline:none;background:#fff;color:var(--ink);}
   .row input:focus,.row select:focus{border-color:var(--purple);}
   .row.locked{background:var(--purple-l);border-color:var(--purple-l);}
+  .row.locked input,.row.locked select{background:transparent;border-color:transparent;padding-left:0;}
   .btn{width:100%;background:var(--purple);color:#fff;border:none;border-radius:12px;
     padding:15px;font-size:16px;font-weight:800;margin-top:6px;}
   .btn.sub{background:#fff;color:var(--purple-d);border:2px solid var(--purple);font-weight:700;}
   .hint{color:var(--sub);font-size:12px;line-height:1.6;margin:12px 2px 0;}
   .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:26px;}
   .hidden{display:none;}
+  .merchant-card{background:var(--purple-l);border:1px solid var(--purple-l);border-radius:12px;
+    padding:12px 14px;margin-bottom:12px;font-size:13px;line-height:1.7;}
+  .merchant-card b{color:var(--purple-d);font-size:15px;}
+  .tag{display:inline-block;background:var(--purple);color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px;}
 </style>
 </head>
 <body>
@@ -53,11 +58,25 @@
       <b id="hostCode">—</b>
     </div>
 
+    <!-- 商铺选择：从档案库自动带出 -->
+    <div class="sec">选择我的商铺</div>
+    <div class="row">
+      <label>商铺名称</label>
+      <select id="merchantSelect">
+        <option value="">— 请选择或搜索 —</option>
+      </select>
+    </div>
+    <div class="merchant-card hidden" id="merchantCard">
+      <b id="mName">—</b><span class="tag" id="mCategory">—</span><br/>
+      地址：<span id="mAddress">—</span><br/>
+      对接人：<span id="mContact">—</span> / <span id="mPhone">—</span>
+    </div>
+
     <!-- 老板娘身份：首次填写，之后自动识别 -->
     <div class="sec">我的档口信息</div>
     <div class="row" id="bossRow">
       <label>地址+档口号</label>
-      <input id="stall" placeholder="如 义乌国际商贸城二区3楼 A12" autocomplete="off" />
+      <input id="stall" placeholder="如 义乌国际商贸城六区一楼3街4单元71753" autocomplete="off" />
       <label style="margin-top:10px;">联系方式</label>
       <input id="contact" placeholder="微信 / 手机号" autocomplete="off" />
       <button class="btn sub" id="saveBtn" style="margin-top:12px;">保存我的档口信息</button>
@@ -95,7 +114,7 @@
     </div>
 
     <button class="btn" id="submitBtn">提交回传</button>
-    <p class="hint" id="hint">提交后会自动带上主播编号与您的地址+档口号/联系方式。当前先复制整单信息并跳转到企微回传表完成提交；后续将升级为一键直写。</p>
+    <p class="hint" id="hint">提交后会自动带上主播编号、商铺名称与您的地址+档口号/联系方式。当前先复制整单信息并跳转到企微回传表完成提交；后续将升级为一键直写。</p>
 
     <p class="foot">CG跨境直播中台 · 一扫对齐</p>
   </div>
@@ -106,13 +125,60 @@
   const hostCode = params.get("code") || "";
   document.getElementById("hostCode").textContent = hostCode || "（未识别，请重新扫主播卡上的③码）";
 
-  // ② 老板娘身份：本地记忆，自动识别
-  const PROFILE_KEY = "cg_boss_profile";
-  const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+  // ② 加载商户档案库
+  let MERCHANTS = [];
+  fetch("merchants.json")
+    .then(r => r.json())
+    .then(d => { MERCHANTS = d.merchants || []; renderMerchantOptions(); })
+    .catch(e => console.error("商户档案加载失败", e));
+
+  const merchantSelect = document.getElementById("merchantSelect");
+  const merchantCard = document.getElementById("merchantCard");
   const stallEl = document.getElementById("stall");
   const contactEl = document.getElementById("contact");
+
+  function renderMerchantOptions() {
+    MERCHANTS.forEach(m => {
+      const opt = document.createElement("option");
+      opt.value = m.name;
+      opt.textContent = m.name + (m.address ? `（${m.address}）` : "");
+      merchantSelect.appendChild(opt);
+    });
+  }
+
+  merchantSelect.addEventListener("change", () => {
+    const name = merchantSelect.value;
+    const m = MERCHANTS.find(x => x.name === name);
+    if (m) {
+      document.getElementById("mName").textContent = m.name;
+      document.getElementById("mCategory").textContent = m.category || "—";
+      document.getElementById("mAddress").textContent = m.address || "—";
+      document.getElementById("mContact").textContent = m.contact_name || "—";
+      document.getElementById("mPhone").textContent = m.contact_phone || "—";
+      merchantCard.classList.remove("hidden");
+      // 自动预填地址到地址+档口号（老板娘可在此基础上修改）
+      if (m.address && !stallEl.value.trim()) {
+        stallEl.value = m.address;
+      }
+      // 预填联系方式（如果还没保存过老板娘自己的联系方式）
+      const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
+      if (m.contact_phone && !prof.contact && !contactEl.value.trim()) {
+        contactEl.value = m.contact_phone;
+      }
+    } else {
+      merchantCard.classList.add("hidden");
+    }
+  });
+
+  // ③ 老板娘身份：本地记忆，自动识别
+  const PROFILE_KEY = "cg_boss_profile";
+  const prof = JSON.parse(localStorage.getItem(PROFILE_KEY) || "{}");
   if (prof.stall) stallEl.value = prof.stall;
   if (prof.contact) contactEl.value = prof.contact;
+  if (prof.merchantName) {
+    merchantSelect.value = prof.merchantName;
+    merchantSelect.dispatchEvent(new Event("change"));
+  }
   if (prof.stall && prof.contact) {
     document.getElementById("savedTip").classList.remove("hidden");
   }
@@ -121,12 +187,14 @@
     const stall = stallEl.value.trim();
     const contact = contactEl.value.trim();
     if (!stall || !contact) { alert("地址+档口号和联系方式都要填哦"); return; }
-    localStorage.setItem(PROFILE_KEY, JSON.stringify({ stall, contact }));
+    const save = { stall, contact };
+    if (merchantSelect.value) save.merchantName = merchantSelect.value;
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(save));
     document.getElementById("savedTip").classList.remove("hidden");
     alert("已记住，下次扫码自动识别");
   });
 
-  // ③ 提交：组装整单（含自动带出的主播编号 + 老板娘档口号/联系方式）
+  // ④ 提交：组装整单
   const DK_FORM_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5eebb9";
   document.getElementById("submitBtn").addEventListener("click", () => {
     const stall = stallEl.value.trim();
@@ -136,6 +204,7 @@
 
     const payload = {
       主播编号: hostCode,
+      商铺名称: merchantSelect.value || "",
       "地址档口号": stall,
       联系方式: contact,
       直播日期: document.getElementById("liveDate").value || "",
@@ -146,7 +215,6 @@
       备注: document.getElementById("note").value || "",
     };
 
-    // 若已部署后端直写接口，优先直写；否则复制+跳企微（半自动兜底）
     if (window.CG_BOSS_API) {
       fetch(window.CG_BOSS_API, {
         method: "POST",
