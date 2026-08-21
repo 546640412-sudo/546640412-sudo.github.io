@@ -91,7 +91,7 @@ function copyToClipboard(text){
 // ====== 主播扫码模式 ======
 function renderStreamer(){
   document.getElementById("title").textContent = "主播扫码回传";
-  document.getElementById("subtitle").textContent = "回传直播数据大屏 · 主播码已自动填好";
+  document.getElementById("subtitle").textContent = "回传直播数据 · 主播码已自动填好";
   var info = getStreamerLocal(CODE) || {code: CODE, name: "", phone: ""};
   var html = '';
   html += '<div class="streamer-code">主播码 ' + esc(CODE) + '</div>';
@@ -100,25 +100,12 @@ function renderStreamer(){
   html += '<div class="row"><label>手机号</label><input id="bPhone" value="' + esc(info.phone||"") + '" placeholder="便于查回"></div>';
   html += '<div class="row"><label>直播平台 *</label><select id="bPlatform"><option value="">请选择</option><option>TikTok</option><option>抖音</option><option>小红书</option><option>快手</option><option>视频号</option><option>其他</option></select></div>';
   html += '<div class="row"><label>直播国家 *</label><input id="bCountry" placeholder="如:沙特/巴西/墨西哥"></div>';
-  html += '<div id="tkFields" class="hidden">';
-  html += '<div class="row"><label>TK 数据大屏链接 *</label><input id="bDashboard" placeholder="TK 后台复制的数据大屏链接"></div>';
-  html += '</div>';
-  html += '<div id="otherFields" class="hidden">';
-  html += '<div class="row"><label>在线场关链接 *</label><input id="bClose" placeholder="在线关单链接"></div>';
-  html += '<div class="row"><label>现场照链接 *</label><input id="bPhoto" placeholder="照片链接"></div>';
-  html += '</div>';
   html += '<div class="row"><label>直播日期</label><input id="bDate" placeholder="如:2026-08-21"></div>';
   html += '<div class="row"><label>备注</label><textarea id="bNote" rows="2"></textarea></div>';
-  html += '<button class="btn" id="submitBtn">提交并复制信息跳转企微</button>';
-  html += '<p class="info">提交后自动复制本单信息到剪贴板,跳到企微主播回传表(707e78),表单里<strong>长按粘贴</strong>即可。</p>';
+  html += '<button class="btn" id="submitBtn">提交</button>';
+  html += '<p class="info">图片(TK数据大屏/场关/现场照)请在企业微信表单里上传。</p>';
   html += '</div>';
   document.getElementById("root").innerHTML = html;
-  // 平台切换:显示对应字段(TK→数据大屏;其他→场关+现场照)
-  document.getElementById("bPlatform").addEventListener("change", function(){
-    var p = this.value;
-    document.getElementById("tkFields").classList.toggle("hidden", p !== "TikTok");
-    document.getElementById("otherFields").classList.toggle("hidden", p === "TikTok" || !p);
-  });
   document.getElementById("submitBtn").addEventListener("click", submitStreamer);
 }
 
@@ -130,19 +117,9 @@ function submitStreamer(){
   var country = document.getElementById("bCountry").value.trim();
   var date = document.getElementById("bDate").value.trim();
   var note = document.getElementById("bNote").value.trim();
-  var dashboard = "", close = "", photo = "";
-  if(platform === "TikTok"){
-    dashboard = document.getElementById("bDashboard").value.trim();
-  } else {
-    close = document.getElementById("bClose").value.trim();
-    photo = document.getElementById("bPhoto").value.trim();
-  }
-  // 校验必填
   if(!platform){ alert("请选择直播平台"); return; }
   if(!country){ alert("请填写直播国家"); return; }
-  if(platform === "TikTok" && !dashboard){ alert("请填写 TK 数据大屏链接"); return; }
-  if(platform !== "TikTok" && (!close || !photo)){ alert("请填写在线场关链接和现场照链接"); return; }
-  var text = "【主播回传数据大屏】主播码:" + code + " | 昵称:" + name + " | 手机:" + phone + " | 平台:" + platform + " | 国家:" + country + " | 日期:" + date + " | TK数据大屏:" + dashboard + " | 在线场关:" + close + " | 现场照:" + photo + " | 备注:" + note;
+  var text = "【主播回传】主播码:" + code + " | 昵称:" + name + " | 手机:" + phone + " | 平台:" + platform + " | 国家:" + country + " | 日期:" + date + " | 备注:" + note;
   copyToClipboard(text);
   window.location.href = RETURN_URL;
 }
@@ -218,11 +195,10 @@ function renderBossForm(boss){
   html += '<div class="row"><label>主播码(关联)</label><input value="' + esc(CODE) + '" readonly></div>';
   html += '<div class="row"><label>本次直播日期</label><input id="bDate" placeholder="如:2026-08-21"></div>';
   html += '<div class="row"><label>折扣</label><input id="bDiscount" placeholder="如:30%"></div>';
-  html += '<div class="row"><label>开单照片链接(选填)</label><input id="bPhoto" placeholder="微信上传后粘贴链接"></div>';
-  html += '<div class="row"><label>配货单链接(选填)</label><input id="bLink" placeholder="如有"></div>';
+  html += '<div class="row"><label>回传方式</label><select id="bMethod"><option value="">请选择</option><option>导入</option><option>拍照</option></select></div>';
   html += '<div class="row"><label>备注</label><textarea id="bNote" rows="2"></textarea></div>';
-  html += '<button class="btn btn-dk" id="submitBtn">提交并复制信息跳转企微</button>';
-  html += '<p class="info">已建档。提交后自动复制本单信息(含主播码+档口档案)到剪贴板,跳到企微档口回传表(5eebb9),<strong>长按粘贴</strong>即可。</p>';
+  html += '<button class="btn btn-dk" id="submitBtn">提交</button>';
+  html += '<p class="info">开单照片/配货单请在企业微信表单里上传。</p>';
   html += '</div>';
   document.getElementById("root").innerHTML = html;
   document.getElementById("submitBtn").addEventListener("click", submitBoss);
@@ -232,10 +208,9 @@ function submitBoss(){
   var boss = getBossInfo(CODE);
   var date = document.getElementById("bDate").value.trim();
   var discount = document.getElementById("bDiscount").value.trim();
-  var photo = document.getElementById("bPhoto").value.trim();
-  var link = document.getElementById("bLink").value.trim();
+  var method = document.getElementById("bMethod").value;
   var note = document.getElementById("bNote").value.trim();
-  var text = "【档口回传】主播码:" + CODE + " | 档口:" + boss.name + " | 地址+档口:" + boss.address + " | 联系方式:" + boss.phone + " | 类目:" + boss.category + " | 日期:" + date + " | 折扣:" + discount + " | 开单照片:" + photo + " | 配货单:" + link + " | 备注:" + note;
+  var text = "【档口回传】主播码:" + CODE + " | 档口:" + boss.name + " | 地址+档口:" + boss.address + " | 联系方式:" + boss.phone + " | 类目:" + boss.category + " | 日期:" + date + " | 折扣:" + discount + " | 方式:" + method + " | 备注:" + note;
   copyToClipboard(text);
   window.location.href = DK_URL;
 }
