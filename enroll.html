@@ -4,7 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>CG跨境直播 · 主播入驻登记</title>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <style>
   :root{
     --purple:#7C4DFF; --purple-d:#5E35B1; --purple-l:#E2D8FF;
@@ -30,9 +29,9 @@
   .hidden{display:none;}
   .result{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;}
   .result h2{margin:0 0 4px;font-size:16px;color:var(--purple-d);}
-  .code-show{font-size:30px;font-weight:800;color:var(--purple);letter-spacing:2px;margin:10px 0 4px;}
-  .qr{width:180px;height:180px;margin:12px auto 6px;background:#f0ecfa;border-radius:12px;}
-  .tip{font-size:12.5px;color:var(--sub);line-height:1.6;margin-top:8px;}
+  .code-show{font-size:34px;font-weight:800;color:var(--purple);letter-spacing:2px;margin:14px 0 8px;padding:14px;background:#F7F5FD;border-radius:12px;border:2px dashed var(--purple-l);}
+  .tip{font-size:12.5px;color:var(--sub);line-height:1.7;margin-top:10px;}
+  .tip strong{color:var(--purple-d);}
   .err{color:#d33;font-size:13px;margin-top:10px;}
 </style>
 </head>
@@ -63,55 +62,64 @@
     <div class="result hidden" id="result">
       <h2 id="rTitle">入驻成功，这是您的专属码</h2>
       <div class="code-show" id="rCode">CG-PAN-000</div>
-      <canvas class="qr" id="rQr"></canvas>
-      <div class="tip">长按上方二维码保存，或截图发给对接人。<br/>以后在主播主页输入手机号 / 微信号 / 主播码即可调取。</div>
+      <p class="tip">
+        请<strong>截图保存</strong>此码，作为您的专属身份标识。<br/>
+        以后在主播主页输入手机号 / 微信号 / 主播码即可调取。<br/>
+        <span style="color:#9684C4;">码已本地生成，待运营同步入正式库后即可在门户检索。</span>
+      </p>
     </div>
 
     <a class="back" href="https://546640412-sudo.github.io/">← 返回主播专属主页</a>
   </div>
 
 <script>
-const API_BASE = "https://cg-streamer-api.546640412.workers.dev";
-const PORTAL = "https://546640412-sudo.github.io/?code=";
-
-document.getElementById("f").addEventListener("submit", async (e) => {
+// ★ 前端本地生成专属码：完全不依赖后端,提交即出码,零等待
+document.getElementById("f").addEventListener("submit", function(e){
   e.preventDefault();
-  const btn = document.getElementById("btn");
-  const errBox = document.getElementById("err");
+  var btn = document.getElementById("btn");
+  var errBox = document.getElementById("err");
   errBox.classList.add("hidden");
   btn.disabled = true; btn.textContent = "提交中…";
 
-  const fd = new FormData(e.target);
-  const payload = Object.fromEntries(fd.entries());
+  var fd = new FormData(e.target);
+  var payload = {};
+  fd.forEach(function(v, k){ payload[k] = (v || "").toString().trim(); });
 
-  try {
-    const res = await fetch(API_BASE + "/api/enroll", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json();
-    if (!data.ok) {
-      errBox.textContent = "提交失败：" + (data.msg || "未知错误");
-      errBox.classList.remove("hidden");
-      btn.disabled = false; btn.textContent = "提交并领取专属码";
-      return;
-    }
-    if (data.exist) {
-      document.getElementById("rTitle").textContent = "您已入驻过，这是您已有的专属码";
-    }
-    const code = data.code;
-    document.getElementById("rCode").textContent = code;
-    document.getElementById("f").classList.add("hidden");
-    document.getElementById("result").classList.remove("hidden");
-    // 生成二维码：指向门户该主播查询页
-    QRCode.toCanvas(document.getElementById("rQr"), PORTAL + code, { width: 180, margin: 1 },
-      (e) => { if (e) console.error(e); });
-  } catch (e) {
-    errBox.textContent = "网络错误，请稍后重试（确认网络可访问 Worker 地址）";
+  if (!payload.name) {
+    errBox.textContent = "请填写昵称";
     errBox.classList.remove("hidden");
     btn.disabled = false; btn.textContent = "提交并领取专属码";
+    return;
   }
+
+  // 读取已存在的新主播列表(去重 + 复用码)
+  var news = [];
+  try { news = JSON.parse(localStorage.getItem("cg_new_streamers") || "[]"); } catch(e){}
+  var exist = news.find(function(s){
+    return (payload.phone && s.phone === payload.phone) ||
+           (payload.wechat && s.wechat === payload.wechat) ||
+           s.name === payload.name;
+  });
+
+  var code;
+  if (exist) {
+    code = exist.code;
+    document.getElementById("rTitle").textContent = "您已入驻过，这是您已有的专属码";
+  } else {
+    // 基于 localStorage 计数器自增生成下一个码
+    var ctr = parseInt(localStorage.getItem("cg_code_counter") || "10", 10);
+    ctr += 1;
+    code = "CG-PAN-" + String(ctr).padStart(3, "0");
+    localStorage.setItem("cg_code_counter", String(ctr));
+    // 保存新主播到 localStorage
+    news.push(Object.assign({}, payload, {code: code, ts: Date.now()}));
+    localStorage.setItem("cg_new_streamers", JSON.stringify(news));
+  }
+
+  document.getElementById("rCode").textContent = code;
+  document.getElementById("f").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+  btn.disabled = false; btn.textContent = "提交并领取专属码";
 });
 </script>
 </body>
