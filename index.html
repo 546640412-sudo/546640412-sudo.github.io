@@ -16,6 +16,8 @@
   .topbar h1{margin:0;font-size:22px;letter-spacing:1px;}
   .topbar p{margin:6px 0 0;font-size:13px;color:var(--purple-l);}
   .wrap{max-width:460px;margin:0 auto;padding:20px 18px 40px;}
+  .enroll-banner{display:block;background:var(--purple-d);color:#fff;text-decoration:none;
+    text-align:center;font-weight:700;padding:14px;border-radius:12px;font-size:14.5px;margin-bottom:18px;line-height:1.4;}
   .search{display:flex;gap:10px;margin-top:8px;}
   .search input{flex:1;border:2px solid var(--purple);border-radius:12px;
     padding:13px 14px;font-size:16px;outline:none;background:#fff;color:var(--ink);}
@@ -53,6 +55,8 @@
   .notfound{margin-top:18px;background:#fff;border-radius:14px;padding:18px;
     text-align:center;color:var(--ink);font-size:14px;line-height:1.6;border:1px solid var(--line);}
   .notfound a{color:var(--purple-d);font-weight:700;}
+  .enroll-inline{display:inline-block;margin-top:14px;background:var(--purple);color:#fff;
+    text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px;font-size:14px;}
   .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:30px;}
   .hidden{display:none;}
 </style>
@@ -64,12 +68,14 @@
   </div>
 
   <div class="wrap">
+    <a class="enroll-banner" id="enrollBtn" href="#">＋ 新主播 / 首次对接？点此登记入驻，领取专属码</a>
+
     <div class="search">
       <input id="q" type="text" inputmode="text" autocomplete="off"
              placeholder="输入微信号 / 主播码 / 手机号" />
       <button id="go">查看</button>
     </div>
-    <p class="hint">已入驻的主播：输入您的<b>主播码</b>、填写资料时的<b>微信号</b>或预留<b>手机号</b>，即可查看您的专属一码通、本人信息及关联进货单。</p>
+    <p class="hint">已入驻的主播：输入您的<b>主播码</b>、填写资料时的<b>微信号</b>或预留<b>手机号</b>，即可查看您的一码通及关联进货单。新主播请先点上方登记。</p>
 
     <div id="result" class="result hidden"></div>
 
@@ -78,7 +84,11 @@
 
 <script>
 let DATA = {streamers:[]};
-fetch("streamers.json").then(r=>r.json()).then(d=>{DATA=d;
+let ENROLL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9";
+fetch("streamers.json").then(r=>r.json()).then(d=>{
+  DATA=d;
+  if(d.enroll_form_url) ENROLL = d.enroll_form_url;
+  document.getElementById("enrollBtn").href = ENROLL;
 }).catch(e=>console.error("索引加载失败",e));
 
 function normalize(s){return (s||"").trim().toLowerCase();}
@@ -126,8 +136,11 @@ function search(){
   } else {
     box.innerHTML = `
       <div class="notfound">
-        未找到「${esc(raw)}」对应的主播码。<br/>
-        请确认输入的主播码 / 微信号 / 手机号是否正确。
+        未找到「${esc(raw)}」对应的主播码。<br/><br/>
+        若您是<b>首次对接的新主播</b>，请先登记入驻领取专属码：<br/>
+        <a class="enroll-inline" href="${esc(ENROLL)}" target="_blank" rel="noopener">＋ 去登记入驻</a>
+        <br/><br/>
+        <span style="font-size:12.5px;color:#9684C4;">若您已入驻仍查不到，请确认输入的主播码 / 微信号 / 手机号是否正确，或联系对接人。</span>
       </div>`;
   }
   box.classList.remove("hidden");
