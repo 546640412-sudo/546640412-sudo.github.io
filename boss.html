@@ -3,239 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>CG跨境直播 · 中转回传</title>
+<title>CG跨境直播</title>
 <style>
-  :root{--purple:#7C4DFF;--purple-d:#5E35B1;--purple-l:#E2D8FF;--bg:#F7F5FD;--ink:#2E204E;--sub:#9684C4;--line:#ECE7F7;}
-  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding:20px 14px;}
-  .topbar{background:var(--purple);color:#fff;text-align:center;padding:18px 14px;border-radius:12px;margin-bottom:18px;}
-  .topbar h1{margin:0;font-size:20px;}
-  .topbar p{margin:6px 0 0;font-size:13px;color:var(--purple-l);}
-  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;}
-  .row{margin-bottom:12px;}
-  .row label{display:block;font-size:13px;color:var(--sub);margin-bottom:4px;}
-  .row input,.row select,.row textarea{width:100%;border:2px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff;color:var(--ink);box-sizing:border-box;}
-  .row input:focus,.row select:focus,.row textarea:focus{border-color:var(--purple);}
-  .row input[readonly]{background:#F7F5FD;color:#5E35B1;font-weight:700;}
-  .btn{width:100%;background:var(--purple);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;margin-top:8px;}
-  .btn:disabled{opacity:.6;}
-  .btn-dk{background:var(--purple-d);}
-  .info{font-size:12.5px;color:var(--sub);line-height:1.7;margin-top:10px;}
-  .err{color:#d33;font-size:13px;margin-top:8px;}
-  .hidden{display:none;}
-  .streamer-code{font-size:22px;font-weight:800;color:var(--purple);letter-spacing:1px;text-align:center;padding:12px;background:#F7F5FD;border-radius:10px;border:2px dashed var(--purple-l);margin-bottom:14px;}
-  .archive{background:#F7F5FD;border:1px solid var(--purple-l);border-radius:10px;padding:12px;font-size:13px;line-height:1.7;margin-bottom:14px;}
-  .archive b{color:var(--purple-d);font-size:15px;}
-  .success{background:#E8F5E9;color:#2E7D32;padding:10px;border-radius:10px;font-size:13px;margin-top:10px;text-align:center;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#F7F5FD;color:#2E204E;display:flex;align-items:center;justify-content:center;height:100vh;text-align:center;}
+  .spinner{width:36px;height:36px;border:4px solid #E2D8FF;border-top-color:#7C4DFF;border-radius:50%;margin:0 auto 16px;animation:spin 1s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .tip{font-size:14px;color:#9684C4;}
 </style>
 </head>
 <body>
-
-<div class="topbar">
-  <h1 id="title">CG跨境直播</h1>
-  <p id="subtitle">扫码中转 · 自动填主播码</p>
+<div>
+  <div class="spinner"></div>
+  <div class="tip" id="tip">正在跳转企微表格…</div>
 </div>
-
-<div id="root"></div>
-
 <script>
+// ★ 中转页:识别主播码(role)后立即跳转对应企微表格,表格字段已设计好,直接让她们填
 var P = new URLSearchParams(location.search);
-var CODE = P.get("code") || "";
-var ROLE = P.get("role") || "boss";  // streamer=主播, boss=档口
-var RETURN_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_707e78";
-var DK_URL    = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5eebb9";
-var STALLS = [];
-
-function esc(s){ return String(s||"").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
-
-function loadStalls(cb){
-  fetch("stalls.json?t=" + Date.now())
-    .then(function(r){ return r.json(); })
-    .then(function(d){ STALLS = (d && d.stalls) || []; cb(); })
-    .catch(function(e){ console.warn("stalls load fail", e); cb(); });
-}
-
-function getBossInfo(code){
-  var map = {};
-  try { map = JSON.parse(localStorage.getItem("cg_boss_info") || "{}"); } catch(e){}
-  return map[code] || null;
-}
-function saveBossInfo(code, info){
-  var map = {};
-  try { map = JSON.parse(localStorage.getItem("cg_boss_info") || "{}"); } catch(e){}
-  map[code] = info;
-  localStorage.setItem("cg_boss_info", JSON.stringify(map));
-}
-
-function getStreamerLocal(code){
-  var news = [];
-  try { news = JSON.parse(localStorage.getItem("cg_new_streamers") || "[]"); } catch(e){}
-  return news.find(function(x){ return x.code === code; }) || null;
-}
-
-function copyToClipboard(text){
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(text).then(function(){}, function(){ fallbackCopy(text); });
-  } else { fallbackCopy(text); }
-  function fallbackCopy(t){
-    var ta = document.createElement("textarea");
-    ta.value = t;
-    ta.style.position = "fixed"; ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand("copy"); } catch(e){}
-    document.body.removeChild(ta);
-  }
-}
-
-// ====== 主播扫码模式 ======
-function renderStreamer(){
-  document.getElementById("title").textContent = "主播扫码回传";
-  document.getElementById("subtitle").textContent = "回传直播数据 · 主播码已自动填好";
-  var info = getStreamerLocal(CODE) || {code: CODE, name: "", phone: ""};
-  var html = '';
-  html += '<div class="streamer-code">主播码 ' + esc(CODE) + '</div>';
-  html += '<div class="card">';
-  html += '<div class="row"><label>昵称</label><input id="bName" value="' + esc(info.name||"") + '" placeholder="自动带出,可修改"></div>';
-  html += '<div class="row"><label>手机号</label><input id="bPhone" value="' + esc(info.phone||"") + '" placeholder="便于查回"></div>';
-  html += '<div class="row"><label>直播平台 *</label><select id="bPlatform"><option value="">请选择</option><option>TikTok</option><option>抖音</option><option>小红书</option><option>快手</option><option>视频号</option><option>其他</option></select></div>';
-  html += '<div class="row"><label>直播国家 *</label><input id="bCountry" placeholder="如:沙特/巴西/墨西哥"></div>';
-  html += '<div class="row"><label>直播日期</label><input id="bDate" placeholder="如:2026-08-21"></div>';
-  html += '<div class="row"><label>备注</label><textarea id="bNote" rows="2"></textarea></div>';
-  html += '<button class="btn" id="submitBtn">提交</button>';
-  html += '<p class="info">图片(TK数据大屏/场关/现场照)请在企业微信表单里上传。</p>';
-  html += '</div>';
-  document.getElementById("root").innerHTML = html;
-  document.getElementById("submitBtn").addEventListener("click", submitStreamer);
-}
-
-function submitStreamer(){
-  var code = CODE;
-  var name = document.getElementById("bName").value.trim();
-  var phone = document.getElementById("bPhone").value.trim();
-  var platform = document.getElementById("bPlatform").value;
-  var country = document.getElementById("bCountry").value.trim();
-  var date = document.getElementById("bDate").value.trim();
-  var note = document.getElementById("bNote").value.trim();
-  if(!platform){ alert("请选择直播平台"); return; }
-  if(!country){ alert("请填写直播国家"); return; }
-  var text = "【主播回传】主播码:" + code + " | 昵称:" + name + " | 手机:" + phone + " | 平台:" + platform + " | 国家:" + country + " | 日期:" + date + " | 备注:" + note;
-  copyToClipboard(text);
-  // 不自动跳(doc.weixin.qq.com 在外部浏览器没登录态会"获取企业信息失败"),改显示按钮
-  document.getElementById("root").innerHTML = '<div class="card" style="text-align:center;">' +
-    '<div style="font-size:18px;font-weight:700;color:#2E7D32;margin:14px 0 8px;">✓ 已提交</div>' +
-    '<p style="font-size:13.5px;color:var(--sub);">信息已复制,请在企微App中打开下方链接粘贴</p>' +
-    '<a class="btn" style="display:block;text-decoration:none;margin-top:14px;text-align:center;" href="' + RETURN_URL + '" target="_blank">前往企微主播回传表</a>' +
-    '<p class="info" style="margin-top:10px;">如点击打不开,请复制此链接到企微/微信里打开:<br/><span style="font-size:11px;color:#5E35B1;word-break:break-all;">' + RETURN_URL + '</span></p>' +
-    '</div>';
-}
-
-// ====== 档口扫码模式 ======
-function renderBoss(){
-  document.getElementById("title").textContent = "档口扫码回传";
-  document.getElementById("subtitle").textContent = "关联主播 " + CODE + " · 自动带出档口信息";
-  var boss = getBossInfo(CODE);
-  if(!boss){
-    renderBossArchive();
-  } else {
-    renderBossForm(boss);
-  }
-}
-
-function renderBossArchive(){
-  var html = '';
-  html += '<div class="archive"><b>首次扫码需先建档</b><br/>填一次,后续扫码自动带出。地址和联系方式是后期绩效基础,务必填写。</div>';
-  html += '<div class="card">';
-  html += '<div class="row"><label>档口名</label>';
-  html += '<select id="aName"><option value="">从商户汇总选(自动带出)或手动输入</option>';
-  STALLS.forEach(function(s){
-    html += '<option value="' + esc(s.name) + '" data-addr="' + esc(s.address||"") + '" data-cat="' + esc(s.category||"") + '" data-phone="' + esc(s.phone||"") + '" data-contact="' + esc(s.contact||"") + '">' + esc(s.name) + ' · ' + esc(s.category||"") + '</option>';
-  });
-  html += '<option value="__manual__">其他(手动输入档口名)</option>';
-  html += '</select>';
-  html += '<input id="aNameManual" class="hidden" style="margin-top:6px;" placeholder="手动输入档口名"></div>';
-  html += '<div class="row"><label>地址 + 档口号</label><input id="aAddr" placeholder="如:国际商贸城六区一楼3街 4单元71753"></div>';
-  html += '<div class="row"><label>联系方式(手机/微信)</label><input id="aPhone" placeholder="便于后期绩效联系"></div>';
-  html += '<div class="row"><label>主营类目</label><input id="aCat" placeholder="如:珠宝饰品"></div>';
-  html += '<button class="btn btn-dk" id="archiveBtn">建档并继续回传</button>';
-  html += '</div>';
-  document.getElementById("root").innerHTML = html;
-
-  var sel = document.getElementById("aName");
-  sel.addEventListener("change", function(){
-    var opt = sel.options[sel.selectedIndex];
-    if(opt.value === "__manual__"){
-      document.getElementById("aNameManual").classList.remove("hidden");
-      ["aAddr","aPhone","aCat"].forEach(function(id){ document.getElementById(id).value = ""; });
-    } else if(opt.value){
-      document.getElementById("aNameManual").classList.add("hidden");
-      document.getElementById("aAddr").value = opt.getAttribute("data-addr") || "";
-      document.getElementById("aPhone").value = opt.getAttribute("data-phone") || "";
-      document.getElementById("aCat").value = opt.getAttribute("data-cat") || "";
-    } else {
-      document.getElementById("aNameManual").classList.add("hidden");
-    }
-  });
-
-  document.getElementById("archiveBtn").addEventListener("click", function(){
-    var sel = document.getElementById("aName");
-    var name = sel.value === "__manual__" ? document.getElementById("aNameManual").value.trim() : sel.value;
-    var addr = document.getElementById("aAddr").value.trim();
-    var phone = document.getElementById("aPhone").value.trim();
-    var cat = document.getElementById("aCat").value.trim();
-    if(!name || !addr){ alert("档口名和地址必填"); return; }
-    saveBossInfo(CODE, {name: name, address: addr, phone: phone, category: cat, ts: Date.now()});
-    renderBossForm({name: name, address: addr, phone: phone, category: cat});
-  });
-}
-
-function renderBossForm(boss){
-  var html = '';
-  html += '<div class="archive">';
-  html += '<b>' + esc(boss.name) + '</b><br/>';
-  html += '地址+档口:' + esc(boss.address||"-") + '<br/>';
-  html += '联系方式:' + esc(boss.phone||"-") + '<br/>';
-  html += '类目:' + esc(boss.category||"-");
-  html += '</div>';
-  html += '<div class="card">';
-  html += '<div class="row"><label>主播码(关联)</label><input value="' + esc(CODE) + '" readonly></div>';
-  html += '<div class="row"><label>本次直播日期</label><input id="bDate" placeholder="如:2026-08-21"></div>';
-  html += '<div class="row"><label>折扣</label><input id="bDiscount" placeholder="如:30%"></div>';
-  html += '<div class="row"><label>回传方式</label><select id="bMethod"><option value="">请选择</option><option>导入</option><option>拍照</option></select></div>';
-  html += '<div class="row"><label>备注</label><textarea id="bNote" rows="2"></textarea></div>';
-  html += '<button class="btn btn-dk" id="submitBtn">提交</button>';
-  html += '<p class="info">开单照片/配货单请在企业微信表单里上传。</p>';
-  html += '</div>';
-  document.getElementById("root").innerHTML = html;
-  document.getElementById("submitBtn").addEventListener("click", submitBoss);
-}
-
-function submitBoss(){
-  var boss = getBossInfo(CODE);
-  var date = document.getElementById("bDate").value.trim();
-  var discount = document.getElementById("bDiscount").value.trim();
-  var method = document.getElementById("bMethod").value;
-  var note = document.getElementById("bNote").value.trim();
-  var text = "【档口回传】主播码:" + CODE + " | 档口:" + boss.name + " | 地址+档口:" + boss.address + " | 联系方式:" + boss.phone + " | 类目:" + boss.category + " | 日期:" + date + " | 折扣:" + discount + " | 方式:" + method + " | 备注:" + note;
-  copyToClipboard(text);
-  // 不自动跳(doc.weixin.qq.com 在外部浏览器没登录态会"获取企业信息失败"),改显示按钮
-  document.getElementById("root").innerHTML = '<div class="card" style="text-align:center;">' +
-    '<div style="font-size:18px;font-weight:700;color:#2E7D32;margin:14px 0 8px;">✓ 已提交</div>' +
-    '<p style="font-size:13.5px;color:var(--sub);">信息已复制,请在企微App中打开下方链接粘贴</p>' +
-    '<a class="btn btn-dk" style="display:block;text-decoration:none;margin-top:14px;text-align:center;" href="' + DK_URL + '" target="_blank">前往企微档口回传表</a>' +
-    '<p class="info" style="margin-top:10px;">如点击打不开,请复制此链接到企微/微信里打开:<br/><span style="font-size:11px;color:#5E35B1;word-break:break-all;">' + DK_URL + '</span></p>' +
-    '</div>';
-}
-
-// 启动
-if(!CODE){
-  document.getElementById("root").innerHTML = '<div class="card" style="text-align:center;color:#d33;">缺少主播码参数(?code=CG-PAN-xxx),请通过扫码进入。</div>';
-} else if(ROLE === "streamer"){
-  renderStreamer();
-  loadStalls(function(){});  // 主播模式不需 stalls,但保持加载
-} else {
-  loadStalls(function(){ renderBoss(); });
-}
+var ROLE = P.get("role") || "boss";
+var RETURN_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_707e78";  // 主播回传表
+var DK_URL    = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5eebb9";  // 档口回传表
+var url = (ROLE === "streamer") ? RETURN_URL : DK_URL;
+setTimeout(function(){ window.location.replace(url); }, 400);
 </script>
 </body>
 </html>
