@@ -90,9 +90,17 @@ const PORTAL = "https://546640412-sudo.github.io/?code=";
 
 let DATA = {streamers:[]};
 
-fetch(API_BASE + "/api/streamers?t=" + Date.now()).then(r=>r.json()).then(d=>{
-  DATA = d && d.streamers ? d : {streamers:[]};
-}).catch(e=>console.error("索引加载失败", e));
+// 实时读 Worker；失败则降级读 GitHub Pages 上的静态索引（国内访问稳定）
+function loadData(){
+  return fetch(API_BASE + "/api/streamers?t=" + Date.now())
+    .then(r=>{ if(!r.ok) throw new Error("worker "+r.status); return r.json(); })
+    .catch(e=>{
+      console.warn("实时接口暂不可达,降级读取本地索引:", e.message);
+      return fetch("streamers.json?t=" + Date.now()).then(r=>r.json());
+    })
+    .catch(e=>{ console.error("本地也失败", e); return {streamers:[]}; });
+}
+loadData().then(d=>{ DATA = d && d.streamers ? d : {streamers:[]}; });
 
 function normalize(s){ return (s||"").trim().toLowerCase(); }
 function esc(s){ return (s||"").replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
