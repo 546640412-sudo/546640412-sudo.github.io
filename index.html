@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>CG跨境直播 · 主播专属主页</title>
+<style>
+  :root{
+    --purple:#7C4DFF; --purple-d:#5E35B1; --purple-l:#E2D8FF;
+    --bg:#F7F5FD; --ink:#2E204E; --sub:#9684C4; --line:#ECE7F7;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);min-height:100vh;}
+  .topbar{background:var(--purple);color:#fff;text-align:center;padding:22px 16px 18px;}
+  .topbar h1{margin:0;font-size:22px;letter-spacing:1px;}
+  .topbar p{margin:6px 0 0;font-size:13px;color:var(--purple-l);}
+  .wrap{max-width:460px;margin:0 auto;padding:20px 18px 40px;}
+  .search{display:flex;gap:10px;margin-top:8px;}
+  .search input{flex:1;border:2px solid var(--purple);border-radius:12px;
+    padding:13px 14px;font-size:16px;outline:none;background:#fff;color:var(--ink);}
+  .search button{background:var(--purple);color:#fff;border:none;border-radius:12px;
+    padding:0 20px;font-size:16px;font-weight:700;}
+  .hint{color:var(--sub);font-size:12.5px;margin:10px 2px 0;line-height:1.5;}
+  .enroll-cta{display:block;text-align:center;margin:18px auto 0;color:var(--purple-d);
+    font-size:14px;text-decoration:underline;font-weight:600;}
+  .result{margin-top:18px;}
+  .save-banner{background:var(--purple-d);color:#fff;border-radius:12px;
+    padding:12px 14px;font-size:14px;line-height:1.5;text-align:center;font-weight:600;}
+  .card-img{width:100%;border-radius:16px;margin-top:14px;display:block;
+    box-shadow:0 8px 24px rgba(94,53,177,.18);background:#fff;}
+  .dl{display:block;text-align:center;margin:14px auto 0;background:var(--purple);
+    color:#fff;text-decoration:none;font-weight:700;padding:13px;border-radius:12px;font-size:15px;}
+  .info-card{background:#fff;border:1px solid var(--line);border-radius:14px;
+    margin-top:16px;padding:6px 16px;}
+  .info-row{display:flex;justify-content:space-between;align-items:center;
+    padding:11px 0;border-bottom:1px solid var(--line);font-size:14.5px;}
+  .info-row:last-child{border-bottom:none;}
+  .info-row span{color:var(--sub);}
+  .info-row b{color:var(--ink);font-weight:700;}
+  .sec-title{margin:22px 2px 10px;font-size:15px;font-weight:700;color:var(--purple-d);
+    display:flex;align-items:center;gap:8px;}
+  .sec-title::before{content:"";width:4px;height:15px;background:var(--purple);border-radius:2px;display:inline-block;}
+  .order{background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;margin-bottom:12px;}
+  .order-h{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+  .order-h .disc{color:var(--purple-d);}
+  .order-line{font-size:13.5px;color:#5b4b86;line-height:1.7;}
+  .order-line b{color:var(--sub);font-weight:600;margin-right:4px;}
+  .order-photo{width:100%;border-radius:10px;margin-top:10px;display:block;background:#f0ecfa;}
+  .order-link{display:inline-block;margin-top:10px;background:var(--purple-l);color:var(--purple-d);
+    text-decoration:none;font-weight:700;padding:8px 14px;border-radius:10px;font-size:13.5px;}
+  .empty{background:#fff;border:1px dashed var(--line);border-radius:14px;
+    padding:18px;text-align:center;color:var(--sub);font-size:14px;}
+  .notfound{margin-top:18px;background:#fff;border-radius:14px;padding:18px;
+    text-align:center;color:var(--ink);font-size:14px;line-height:1.6;border:1px solid var(--line);}
+  .notfound a{color:var(--purple-d);font-weight:700;}
+  .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:30px;}
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>CG跨境直播</h1>
+    <p>主播专属主页 · 一码对接</p>
+  </div>
+
+  <div class="wrap">
+    <div class="search">
+      <input id="q" type="text" inputmode="text" autocomplete="off"
+             placeholder="输入您的微信号 或 主播码" />
+      <button id="go">查看</button>
+    </div>
+    <p class="hint">已入驻的主播：输入您填写资料时的<b>微信号</b>或卡片上的<b>主播码</b>，即可查看您的专属一码通、本人信息及关联进货单。</p>
+    <a class="enroll-cta" id="enrollLink" href="#" target="_blank" rel="noopener">还没入驻？点此填写资料建档</a>
+
+    <div id="result" class="result hidden"></div>
+
+    <p class="foot">CG跨境直播中台 · 一码一人</p>
+  </div>
+
+<script>
+let DATA = {enroll_form_url:"", streamers:[]};
+fetch("streamers.json").then(r=>r.json()).then(d=>{DATA=d;
+  document.getElementById("enrollLink").href = d.enroll_form_url || "#";
+}).catch(e=>console.error("索引加载失败",e));
+
+function normalize(s){return (s||"").trim().toLowerCase();}
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));}
+
+function orderHtml(o){
+  let h = `<div class="order-h">直播日期 ${esc(o.date||"-")}　<span class="disc">折扣 ${esc(o.discount||"-")}</span></div>`;
+  if(o.method) h += `<div class="order-line"><b>回传方式</b>${esc(o.method)}</div>`;
+  if(o.note)   h += `<div class="order-line"><b>备注</b>${esc(o.note)}</div>`;
+  if(o.attachment) h += `<a class="order-link" href="${esc(o.attachment)}" target="_blank" rel="noopener">查看配货单</a>`;
+  if(o.photo) h += `<img class="order-photo" src="${esc(o.photo)}" alt="开单照片" />`;
+  return `<div class="order">${h}</div>`;
+}
+
+function search(){
+  const raw = document.getElementById("q").value;
+  const key = normalize(raw);
+  const box = document.getElementById("result");
+  if(!key){ box.classList.add("hidden"); return; }
+
+  const hit = DATA.streamers.find(s =>
+    normalize(s.code)===key || (s.wechat && normalize(s.wechat)===key)
+  );
+
+  if(hit){
+    let html = `
+      <div class="save-banner">这是您的专属一码通 · 建议截图保存本页 / 长按上方图片存到相册，长期使用方便随时调取</div>
+      <img class="card-img" src="${esc(hit.card)}" alt="主播专属码" />
+      <a class="dl" href="${esc(hit.card)}" download>下载保存我的专属码</a>
+      <div class="info-card">
+        <div class="info-row"><span>主播码</span><b>${esc(hit.code)}</b></div>
+        <div class="info-row"><span>昵称</span><b>${esc(hit.name||"-")}</b></div>
+        <div class="info-row"><span>平台</span><b>${esc(hit.platform||"-")}</b></div>
+      </div>`;
+
+    html += `<div class="sec-title">关联进货单（${hit.orders.length}）</div>`;
+    if(hit.orders.length){
+      html += hit.orders.map(orderHtml).join("");
+    } else {
+      html += `<div class="empty">暂无关联进货单<br/>档口老板娘回传后将自动显示在这里</div>`;
+    }
+    box.innerHTML = html;
+  } else {
+    box.innerHTML = `
+      <div class="notfound">
+        未找到「${esc(raw)}」对应的主播码。<br/>
+        请确认输入的微信号 / 主播码是否正确；<br/>
+        若您还未入驻，请先 <a href="${esc(DATA.enroll_form_url)}" target="_blank" rel="noopener">填写资料建档</a>。
+      </div>`;
+  }
+  box.classList.remove("hidden");
+}
+
+document.getElementById("go").addEventListener("click", search);
+document.getElementById("q").addEventListener("keydown", e=>{ if(e.key==="Enter") search(); });
+</script>
+</body>
+</html>

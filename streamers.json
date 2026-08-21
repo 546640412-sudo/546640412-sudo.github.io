@@ -1,0 +1,62 @@
+{
+  "enroll_form_url": "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9",
+  "streamers": [
+    {
+      "code": "CG-PAN-001",
+      "name": "小鹿",
+      "wechat": "",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-001.png",
+      "orders": [
+        {
+          "date": "2026-08-19",
+          "discount": "32%",
+          "method": "",
+          "note": "示例·档口回传演示",
+          "attachment": null,
+          "photo": null
+        }
+      ]
+    },
+    {
+      "code": "CG-PAN-002",
+      "name": "阿May",
+      "wechat": "",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-002.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-003",
+      "name": "莉莉",
+      "wechat": "",
+      "platform": "小红书",
+      "card": "cards/CG-PAN-003.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-004",
+      "name": "Coco",
+      "wechat": "",
+      "platform": "抖音",
+      "card": "cards/CG-PAN-004.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-005",
+      "name": "娜娜",
+      "wechat": "",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-005.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-006",
+      "name": "潘潘",
+      "wechat": "Pyyake",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-006.png",
+      "orders": []
+    }
+  ]
+}
