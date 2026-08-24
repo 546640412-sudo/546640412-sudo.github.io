@@ -3,93 +3,73 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>CG跨境直播 · 核对跳转</title>
+<title>CG跨境直播 · 档口扫码</title>
 <style>
-  :root{--purple:#7C4DFF;--purple-d:#5E35B1;--purple-l:#E2D8FF;--bg:#F7F5FD;--ink:#2E204E;--sub:#9684C4;--line:#ECE7F7;}
+  :root{ --purple:#7C4DFF; --purple-d:#5E35B1; --purple-l:#E2D8FF; --bg:#F7F5FD; --ink:#2E204E; --sub:#9684C4; --line:#ECE7F7; }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);padding:20px 14px;min-height:100vh;}
-  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 4px 14px rgba(94,53,177,.10);margin-bottom:14px;}
-  h2{margin:0 0 6px;font-size:18px;color:var(--purple-d);}
-  .sub{margin:0 0 14px;font-size:12.5px;color:var(--sub);line-height:1.6;}
-  .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;align-items:center;}
-  .row:last-child{border-bottom:none;}
-  .row span{color:var(--sub);}
-  .row b{color:var(--ink);font-weight:700;}
-  .btn{display:block;width:100%;background:var(--purple);color:#fff;text-align:center;padding:14px;border-radius:12px;text-decoration:none;font-size:15px;font-weight:700;border:none;cursor:pointer;margin-top:6px;font-family:inherit;}
-  .btn-dk{background:var(--purple-d);}
-  .tip{font-size:12.5px;color:var(--sub);line-height:1.7;margin-top:10px;text-align:center;}
-  .err{color:#d33;font-size:13px;margin-top:10px;text-align:center;}
-  .loading{text-align:center;padding:40px;color:var(--sub);font-size:14px;}
+  body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+  .topbar{background:var(--purple);color:#fff;text-align:center;padding:26px 16px 20px;}
+  .topbar h1{margin:0;font-size:22px;letter-spacing:1px;}
+  .topbar p{margin:6px 0 0;font-size:13px;color:var(--purple-l);}
+  .wrap{max-width:460px;margin:0 auto;padding:24px 18px 40px;}
+  .card{background:#fff;border-radius:16px;padding:24px 20px;border:1px solid var(--line);}
+  .code-line{text-align:center;margin-bottom:6px;}
+  .code-line span{font-size:13px;color:var(--sub);}
+  .code-show{font-size:30px;font-weight:800;color:var(--purple);letter-spacing:2px;margin:8px 0 4px;padding:12px;background:#F7F5FD;border-radius:12px;border:2px dashed var(--purple-l);text-align:center;}
+  .pick-tip{font-size:14px;color:var(--ink);text-align:center;margin:20px 0 14px;font-weight:600;}
+  .btns{display:flex;flex-direction:column;gap:14px;}
+  .btn{display:block;text-align:center;padding:18px;border-radius:14px;font-size:16px;font-weight:700;text-decoration:none;color:#fff;}
+  .btn-jd{background:var(--purple-d);}
+  .btn-hc{background:var(--purple);}
+  .btn small{display:block;font-size:12px;font-weight:400;opacity:.85;margin-top:4px;}
+  .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:26px;}
 </style>
 </head>
 <body>
-<div id="root" class="loading">加载中…</div>
+  <div class="topbar"><h1>CG跨境直播</h1><p>档口扫码 · 一码对接</p></div>
+  <div class="wrap" id="wrap">
+    <div id="bossPanel" class="hidden">
+      <div class="card">
+        <div class="code-line"><span>当前主播码</span></div>
+        <div class="code-show" id="codeShow">CG-PAN-000</div>
+        <div class="pick-tip">请选择本次操作</div>
+        <div class="btns">
+          <a class="btn btn-jd" id="btnJd" href="#" target="_blank" rel="noopener">首次建档<small>第一次跟这位主播合作 · 填档口资料</small></a>
+          <a class="btn btn-hc" id="btnHc" href="#" target="_blank" rel="noopener">日常回传<small>已建档 · 传开单照片或表格</small></a>
+        </div>
+      </div>
+      <p class="foot">两个都带好主播码，选错也不要紧，返回重选即可</p>
+    </div>
+    <div id="streamerPanel" class="hidden">
+      <div class="card" style="text-align:center;">
+        <p style="font-size:15px;color:var(--ink);margin:10px 0;">正在进入主播回传表单…</p>
+        <p style="font-size:13px;color:var(--sub);">主播码已自动带好，稍候跳转</p>
+      </div>
+    </div>
+  </div>
 
 <script>
-var P = new URLSearchParams(location.search);
-var CODE = P.get("code") || "";
-var ROLE = P.get("role") || "boss";
-var RETURN_URL = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_707e78";  // 主播回传
-var DK_URL    = "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5eebb9";  // 档口回传
+var JD_FORM = "https://ckzusnk8h4.feishu.cn/share/base/shrcnm51kclmSLaAWoSBc8t8NKT";
+var HC_FORM = "https://ckzusnk8h4.feishu.cn/share/base/shrcn5JusWXOCJtSAyyd1PNm9Td";
+var RETURN_FORM = "https://ckzusnk8h4.feishu.cn/share/base/shrcn5aOyKvtNAJdAPGGhPnZMKb";
+var FIELD = encodeURIComponent("主播码");
 
-function esc(s){ return String(s||"").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+var p = new URLSearchParams(location.search);
+var code = (p.get("code") || "").trim();
+var role = (p.get("role") || "").trim();
+var prefill = "?prefill_" + FIELD + "=" + encodeURIComponent(code);
 
-// 从 streamers.json 拉全表(异步),优先用 localStorage 新主播
-function findStreamer(code, cb){
-  // 先查 localStorage(本地新入驻主播)
-  try {
-    var news = JSON.parse(localStorage.getItem("cg_new_streamers") || "[]");
-    var hit = news.find(function(x){ return x.code === code; });
-    if(hit) return cb(hit);
-  } catch(e){}
-  // 拉 streamers.json
-  fetch("streamers.json?t=" + Date.now())
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var ss = (d && d.streamers) || [];
-      cb(ss.find(function(s){ return s.code === code; }) || null);
-    })
-    .catch(function(){ cb(null); });
+if(role === "streamer"){
+  // 主播扫：直接跳主播回传表单（带预填码）
+  document.getElementById("streamerPanel").classList.remove("hidden");
+  setTimeout(function(){ window.location.replace(RETURN_FORM + prefill); }, 500);
+} else {
+  // 商家扫：二选一
+  document.getElementById("codeShow").textContent = code || "未识别";
+  document.getElementById("btnJd").href = JD_FORM + prefill;
+  document.getElementById("btnHc").href = HC_FORM + prefill;
+  document.getElementById("bossPanel").classList.remove("hidden");
 }
-
-function render(){
-  if(!CODE){
-    document.getElementById("root").className = "card";
-    document.getElementById("root").innerHTML = '<h2>缺少主播码</h2><p class="err">请通过扫码进入</p>';
-    return;
-  }
-  findStreamer(CODE, function(s){
-    document.getElementById("root").className = "";
-    if(!s){
-      document.getElementById("root").innerHTML = '<div class="card"><h2>未找到主播 '+esc(CODE)+'</h2><p class="err">主播码无效,请确认卡片是否正确</p></div>';
-      return;
-    }
-    var url = (ROLE === "streamer") ? RETURN_URL : DK_URL;
-    var title = (ROLE === "streamer") ? "主播扫码回传" : "档口扫码回传";
-    var btnClass = (ROLE === "streamer") ? "btn" : "btn btn-dk";
-    var targetName = (ROLE === "streamer") ? "主播回传表" : "档口回传表";
-    var roleTip = (ROLE === "streamer")
-      ? "你是主播,扫码进入你专属的直播数据回传"
-      : "你是档口/商家,扫码进入给这位主播的档口数据回传";
-    var html = '';
-    html += '<div class="card">';
-    html += '<h2>' + esc(title) + '</h2>';
-    html += '<p class="sub">' + esc(roleTip) + '<br/>请核对下面信息,确认是给你回传/供货的这个主播后,再点下方按钮跳企微表格填写。</p>';
-    html += '<div class="row"><span>主播码</span><b>' + esc(s.code) + '</b></div>';
-    html += '<div class="row"><span>昵称</span><b>' + esc(s.name||"-") + '</b></div>';
-    html += '<div class="row"><span>手机号</span><b>' + esc(s.phone||"-") + '</b></div>';
-    html += '<div class="row"><span>微信号</span><b>' + esc(s.wechat||"-") + '</b></div>';
-    html += '</div>';
-    html += '<button class="' + btnClass + '" id="confirmBtn">确认无误,跳企微' + esc(targetName) + '</button>';
-    html += '<p class="tip">提示:在企微表格里<strong>手动填一次主播码</strong>(就是上面那个),后台就能把你的提交跟这位主播关联起来。</p>';
-    document.getElementById("root").innerHTML = html;
-    document.getElementById("confirmBtn").addEventListener("click", function(){
-      window.location.href = url;
-    });
-  });
-}
-
-render();
 </script>
 </body>
 </html>
