@@ -128,10 +128,11 @@ document.getElementById("f").addEventListener("submit", function(e){
   }
 
   document.getElementById("rCode").textContent = code;
-  // 三个按钮:主播回传/商家回传(带 code 跳 boss.html 自动填码),去门户查询(带手机号)
+  // 三个按钮:主播回传/商家回传(飞书表单,主播码预填+隐藏),去门户查询(带手机号)
   var ec = encodeURIComponent(code);
-  document.getElementById("goStreamer").href = "https://546640412-sudo.github.io/boss.html?role=streamer&code=" + ec;
-  document.getElementById("goBoss").href = "https://546640412-sudo.github.io/boss.html?role=boss&code=" + ec;
+  var f = encodeURIComponent("主播码");
+  document.getElementById("goStreamer").href = "https://ckzusnk8h4.feishu.cn/share/base/shrcn8D5N2ied7IAfs8tCX2ayBf?prefill_" + f + "=" + ec + "&hide_" + f + "=1";
+  document.getElementById("goBoss").href = "https://ckzusnk8h4.feishu.cn/share/base/shrcn2S4MX71UlZqIYnEJZO1jPb?prefill_" + f + "=" + ec + "&hide_" + f + "=1";
   var qLink = document.getElementById("goPortal");
   if (payload.phone) {
     qLink.href = "https://546640412-sudo.github.io/?q=" + encodeURIComponent(payload.phone);
