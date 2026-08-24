@@ -1,5 +1,5 @@
 {
-  "enroll_form_url": "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9",
+  "enroll_form_url": "https://ckzusnk8h4.feishu.cn/share/base/shrcnMkKbTVQR56rIFAGPriKSjc",
   "streamers": [
     {
       "code": "CG-PAN-001",
@@ -8,16 +8,7 @@
       "phone": "13800000001",
       "platform": "TikTok",
       "card": "cards/CG-PAN-001.png",
-      "orders": [
-        {
-          "date": "2026-08-19",
-          "discount": "32%",
-          "method": "",
-          "note": "示例·档口回传演示",
-          "attachment": null,
-          "photo": null
-        }
-      ]
+      "orders": []
     },
     {
       "code": "CG-PAN-002",
@@ -33,7 +24,7 @@
       "name": "莉莉",
       "wechat": "",
       "phone": "",
-      "platform": "小红书",
+      "platform": "其他",
       "card": "cards/CG-PAN-003.png",
       "orders": []
     },
@@ -42,7 +33,7 @@
       "name": "Coco",
       "wechat": "",
       "phone": "",
-      "platform": "抖音",
+      "platform": "其他",
       "card": "cards/CG-PAN-004.png",
       "orders": []
     },
@@ -85,9 +76,9 @@
     {
       "code": "CG-PAN-009",
       "name": "66",
-      "wechat": "u d n n c y",
+      "wechat": "u d n n c y",
       "phone": "13958818821",
-      "platform": "小红书",
+      "platform": "其他",
       "card": "cards/CG-PAN-009.png",
       "orders": []
     },
@@ -98,6 +89,24 @@
       "phone": "18021337856",
       "platform": "其他",
       "card": "cards/CG-PAN-010.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-011",
+      "name": "11",
+      "wechat": "ybdhuc",
+      "phone": "13500000000",
+      "platform": "其他",
+      "card": "cards/CG-PAN-011.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-012",
+      "name": "yy",
+      "wechat": "beuxbvf",
+      "phone": "15000000000",
+      "platform": "其他",
+      "card": "cards/CG-PAN-012.png",
       "orders": []
     }
   ]
