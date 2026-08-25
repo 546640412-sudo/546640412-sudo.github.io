@@ -2431,7 +2431,7 @@ function renderCard(name, code){
   drawOne(qr3, 110, 390, 180);
 }
 
-document.getElementById("f").addEventListener("submit", function(e){
+document.getElementById("f").addEventListener("submit", async function(e){
   e.preventDefault();
   var btn = document.getElementById("btn");
   var errBox = document.getElementById("err");
@@ -2449,6 +2449,7 @@ document.getElementById("f").addEventListener("submit", function(e){
     return;
   }
 
+  // 本地去重（同一设备已登记过）
   var news = [];
   try { news = JSON.parse(localStorage.getItem("cg_new_streamers") || "[]"); } catch(e){}
   var exist = news.find(function(s){
@@ -2462,12 +2463,32 @@ document.getElementById("f").addEventListener("submit", function(e){
     code = exist.code;
     document.getElementById("rTitle").textContent = "您已入驻过，这是您已有的专属码";
   } else {
-    var ctr = parseInt(localStorage.getItem("cg_code_counter") || "10", 10);
-    ctr += 1;
-    code = "CG-PAN-" + String(ctr).padStart(3, "0");
-    localStorage.setItem("cg_code_counter", String(ctr));
-    news.push(Object.assign({}, payload, {code: code, ts: Date.now()}));
-    localStorage.setItem("cg_new_streamers", JSON.stringify(news));
+    // 优先写飞书（超管授权后自动入库）；未授权/异常时本地兜底出码
+    var synced = false;
+    try {
+      var st = await fetch("https://api.yyfafa.com/api/token-status").then(function(r){return r.json();});
+      if (st && st.authorized) {
+        var res = await fetch("https://api.yyfafa.com/api/enroll", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).then(function(r){return r.json();});
+        if (res && res.ok && res.code) { code = res.code; synced = true; }
+        else { throw new Error((res && res.msg) ? res.msg : "写入失败"); }
+      } else {
+        throw new Error("not_authorized");
+      }
+    } catch(err) {
+      var ctr = parseInt(localStorage.getItem("cg_code_counter") || "10", 10);
+      ctr += 1;
+      code = "CG-PAN-" + String(ctr).padStart(3, "0");
+      localStorage.setItem("cg_code_counter", String(ctr));
+      document.getElementById("rTitle").textContent = "专属码已生成（系统授权后将自动同步到后台）";
+    }
+    if (!synced) {
+      news.push(Object.assign({}, payload, {code: code, ts: Date.now()}));
+      localStorage.setItem("cg_new_streamers", JSON.stringify(news));
+    }
   }
 
   document.getElementById("rCode").textContent = code;
@@ -2476,7 +2497,7 @@ document.getElementById("f").addEventListener("submit", function(e){
   document.getElementById("goStreamer").href = RETURN_FORM + "?prefill_" + FIELD + "=" + ec;
   document.getElementById("goBoss").href = DK_FORM + "?prefill_" + FIELD + "=" + ec;
   var qLink = document.getElementById("goPortal");
-  qLink.href = "https://546640412-sudo.github.io/?q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
+  qLink.href = "https://pan.yyfafa.com/?q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
 
   document.getElementById("f").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
