@@ -7,6 +7,18 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <title>CG跨境直播 · 扫码回传</title>
+<script>
+// 微信/浏览器强缓存穿透：入口必须带 v=3 参数才认为是最新版本
+(function(){
+  try {
+    var url = new URL(location.href);
+    if (url.searchParams.get('v') !== '3') {
+      url.searchParams.set('v', '3');
+      location.replace(url.toString());
+    }
+  } catch(e) {}
+})();
+</script>
 <style>
   :root{ --purple:#7C4DFF; --purple-d:#5E35B1; --purple-l:#E2D8FF; --bg:#F7F5FD; --ink:#2E204E; --sub:#9684C4; --line:#ECE7F7; --ok:#16a34a; }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -95,8 +107,8 @@
       <div class="fld hidden" id="st_otherWrap"><label>其他平台名称</label><input id="st_other" placeholder="如：小红书 / 抖音"></div>
       <div class="fld"><label>直播国家</label><input id="st_country" placeholder="如：美国 / 英国 / 马来西亚"></div>
       <div class="fld"><label>直播日期</label><input id="st_date" type="date"></div>
-      <div class="fld"><label>TK数据大屏（截图）</label><input id="st_tk" type="file" accept="image/*"><div id="st_tk_name" style="font-size:12px;color:var(--sub);margin-top:6px;"></div></div>
-      <div class="fld"><label>在线场关（截图）</label><input id="st_online" type="file" accept="image/*"><div id="st_online_name" style="font-size:12px;color:var(--sub);margin-top:6px;"></div></div>
+      <div class="fld hidden" id="st_tkWrap"><label>TK数据大屏（截图）</label><input id="st_tk" type="file" accept="image/*"><div id="st_tk_name" style="font-size:12px;color:var(--sub);margin-top:6px;"></div></div>
+      <div class="fld hidden" id="st_onlineWrap"><label>在线场关（截图）</label><input id="st_online" type="file" accept="image/*"><div id="st_online_name" style="font-size:12px;color:var(--sub);margin-top:6px;"></div></div>
       <div class="fld"><label>现场照</label><input id="st_scene" type="file" accept="image/*" capture="camera"><div id="st_scene_name" style="font-size:12px;color:var(--sub);margin-top:6px;"></div></div>
       <div class="fld"><label>备注</label><textarea id="st_note" rows="2" placeholder="选填"></textarea></div>
       <button class="submit" id="stSubmit">提交回传</button>
@@ -107,10 +119,11 @@
       <div class="tick">✓</div>
       <h2>已提交</h2>
       <p id="okMsg">数据已进入后台，可返回或关闭本页</p>
-      <a class="back" href="javascript:location.reload()">继续回传另一单</a>
+      <a class="back" href="javascript:location.href=location.href.split('?')[0]+'?v=3'">继续回传另一单</a>
     </div>
 
     <div id="errBox" class="err hidden"></div>
+    <a class="back" href="https://pan.yyfafa.com/?v=3">← 返回主播专属主页</a>
   </div>
 
 <script>
@@ -166,7 +179,10 @@ function readFileAsDataUrl(file){
 if(ROLE === "streamer"){
   show("streamerForm");
   document.getElementById("st_platform").addEventListener("change", function(){
-    if(this.value === "其他") show("st_otherWrap"); else hide("st_otherWrap");
+    var v = this.value;
+    if(v === "其他"){ show("st_otherWrap"); show("st_onlineWrap"); hide("st_tkWrap"); }
+    else if(v === "TikTok"){ hide("st_otherWrap"); show("st_tkWrap"); hide("st_onlineWrap"); }
+    else { hide("st_otherWrap"); hide("st_tkWrap"); hide("st_onlineWrap"); }
   });
   // 显示已选附件文件名
   ["st_tk","st_online","st_scene"].forEach(function(id){
@@ -186,12 +202,10 @@ if(ROLE === "streamer"){
     if(d) fields["直播日期"] = d;
     var n = document.getElementById("st_note").value.trim();
     if(n) fields["备注"] = n;
-    // 附件字段：TK数据大屏 / 在线场关 / 现场照
-    var atts = [
-      { id: "st_tk", field: "TK数据大屏" },
-      { id: "st_online", field: "在线场关" },
-      { id: "st_scene", field: "现场照" }
-    ];
+    // 平台区分：TikTok 传 TK数据大屏；其他平台 传 在线场关；现场照始终可传
+    var atts = [{ id: "st_scene", field: "现场照" }];
+    if(plat === "TikTok") atts.push({ id: "st_tk", field: "TK数据大屏" });
+    if(plat === "其他") atts.push({ id: "st_online", field: "在线场关" });
     for(var i=0;i<atts.length;i++){
       var a = atts[i];
       var file = document.getElementById(a.id).files && document.getElementById(a.id).files[0];
