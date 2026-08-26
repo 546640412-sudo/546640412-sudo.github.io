@@ -6,7 +6,8 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<title>CG跨境直播 · 主播专属主页</title>
+<title>ZB跨境直播 · 主播专属主页</title>
+<script src="https://cdn.staticfile.org/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 // 微信/浏览器强缓存穿透：入口必须带 v=6 参数才认为是最新版本
 (function(){
@@ -58,6 +59,10 @@
   .notfound a{color:var(--purple-d);font-weight:700;}
   .enroll-inline{display:inline-block;margin-top:14px;background:var(--purple);color:#fff;text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px;font-size:14px;}
   .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:30px;}
+  .qr-grid{display:flex;gap:16px;justify-content:center;margin:16px 0;}
+  .qr-item{background:#fff;border-radius:16px;padding:14px;text-align:center;border:1px solid var(--line);flex:1;max-width:170px;}
+  .qr-item img{display:block;margin:0 auto;border-radius:10px;}
+  .qr-item p{margin:10px 0 0;font-size:12px;color:var(--sub);line-height:1.4;}
   .hidden{display:none;}
   .status{margin-top:14px;font-size:12.5px;color:var(--sub);text-align:center;}
   .status a{color:var(--purple-d);font-weight:700;text-decoration:none;}
@@ -65,7 +70,7 @@
 </head>
 <body>
   <div class="topbar">
-    <h1>CG跨境直播</h1>
+    <h1>ZB跨境直播</h1>
     <p>主播专属主页 · 一码对接</p>
   </div>
   <div class="wrap">
@@ -77,12 +82,12 @@
     <p class="hint">已入驻的主播：输入您的<b>主播码</b>、填写资料时的<b>微信号</b>或预留<b>手机号</b>，即可查看您的一码通及关联进货单。新主播请先点上方登记。</p>
     <div id="status" class="status hidden"></div>
     <div id="result" class="result hidden"></div>
-    <p class="foot">CG跨境直播中台 · 一码一人</p>
+    <p class="foot">ZB跨境直播中台 · 一码一人</p>
   </div>
 <script>
-var DATA = {"enroll_form_url": "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9", "streamers": [{"code": "CG-PAN-001", "name": "小鹿", "wechat": "xiaolu_wx_demo", "phone": "13800000001", "platform": "TikTok", "card": "cards/CG-PAN-001.png", "orders": [{"date": "2026-08-19", "discount": "32%", "method": "", "note": "示例·档口回传演示", "attachment": null, "photo": null}]}, {"code": "CG-PAN-002", "name": "阿May", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/CG-PAN-002.png", "orders": []}, {"code": "CG-PAN-003", "name": "莉莉", "wechat": "", "phone": "", "platform": "小红书", "card": "cards/CG-PAN-003.png", "orders": []}, {"code": "CG-PAN-004", "name": "Coco", "wechat": "", "phone": "", "platform": "抖音", "card": "cards/CG-PAN-004.png", "orders": []}, {"code": "CG-PAN-005", "name": "娜娜", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/CG-PAN-005.png", "orders": []}, {"code": "CG-PAN-006", "name": "潘潘", "wechat": "Pyyake", "phone": "13757133019", "platform": "TikTok", "card": "cards/CG-PAN-006.png", "orders": []}, {"code": "CG-PAN-007", "name": "Kayla", "wechat": "18021337956", "phone": "18021337956", "platform": "其他", "card": "cards/CG-PAN-007.png", "orders": []}, {"code": "CG-PAN-008", "name": "Fernndoexportaxor", "wechat": "15021472034", "phone": "15021472034", "platform": "TikTok", "card": "cards/CG-PAN-008.png", "orders": []}, {"code": "CG-PAN-009", "name": "66", "wechat": "u d n n c y", "phone": "13958818821", "platform": "小红书", "card": "cards/CG-PAN-009.png", "orders": []}, {"code": "CG-PAN-010", "name": "Kayla", "wechat": "18021337956", "phone": "18021337856", "platform": "其他", "card": "cards/CG-PAN-010.png", "orders": []}]};
+var DATA = {"enroll_form_url": "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9", "streamers": [{"code": "ZB-PAN-001", "name": "小鹿", "wechat": "xiaolu_wx_demo", "phone": "13800000001", "platform": "TikTok", "card": "cards/ZB-PAN-001.png", "orders": [{"date": "2026-08-19", "discount": "32%", "method": "", "note": "示例·档口回传演示", "attachment": null, "photo": null}]}, {"code": "ZB-PAN-002", "name": "阿May", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/ZB-PAN-002.png", "orders": []}, {"code": "ZB-PAN-003", "name": "莉莉", "wechat": "", "phone": "", "platform": "小红书", "card": "cards/ZB-PAN-003.png", "orders": []}, {"code": "ZB-PAN-004", "name": "Coco", "wechat": "", "phone": "", "platform": "抖音", "card": "cards/ZB-PAN-004.png", "orders": []}, {"code": "ZB-PAN-005", "name": "娜娜", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/ZB-PAN-005.png", "orders": []}, {"code": "ZB-PAN-006", "name": "潘潘", "wechat": "Pyyake", "phone": "13757133019", "platform": "TikTok", "card": "cards/ZB-PAN-006.png", "orders": []}, {"code": "ZB-PAN-007", "name": "Kayla", "wechat": "18021337956", "phone": "18021337956", "platform": "其他", "card": "cards/ZB-PAN-007.png", "orders": []}, {"code": "ZB-PAN-008", "name": "Fernndoexportaxor", "wechat": "15021472034", "phone": "15021472034", "platform": "TikTok", "card": "cards/ZB-PAN-008.png", "orders": []}, {"code": "ZB-PAN-009", "name": "66", "wechat": "u d n n c y", "phone": "13958818821", "platform": "小红书", "card": "cards/ZB-PAN-009.png", "orders": []}, {"code": "ZB-PAN-010", "name": "Kayla", "wechat": "18021337956", "phone": "18021337856", "platform": "其他", "card": "cards/ZB-PAN-010.png", "orders": []}]};
 var RETURN_URL = "https://pan.yyfafa.com/boss.html?v=6&role=streamer&code=";
-var DK_URL = "https://pan.yyfafa.com/boss.html?v=6&code=";
+var DK_URL = "https://pan.yyfafa.com/boss.html?v=6&role=merchant&code=";
 
 // 合并本地新主播(入驻表单前端生成的,自动入搜索索引)
 try {
@@ -162,14 +167,15 @@ async function search(){
   });
 
   if(hit){
-    // 老主播用专属卡片,新主播(无 card 字段)用通用合并卡(enroll-card)兜底
-    var cardSrc = hit.card || "cards/enroll-card.png";
-    var cardImg = '<img class="card-img" src="' + esc(cardSrc) + '" alt="专属码卡" onerror="this.onerror=null;this.src=\'cards/enroll-card.png\'" />';
-    var html = '<div class="save-banner">这是您的专属一码通 · 长按卡片图保存 / 点下方按钮回传</div>';
-    html += cardImg;
+    var mcode = hit.merchant_code || "";
+    var html = '<div class="save-banner">这是您的专属一码通 · 长按下方二维码保存 / 点按钮回传</div>';
+    html += '<div class="qr-grid">' +
+      '<div class="qr-item"><div id="qrStreamer"></div><p>主播专属码<br/>扫码 → 主播回传</p></div>' +
+      '<div class="qr-item"><div id="qrMerchant"></div><p>商家码' + (mcode ? "<br/><b>" + esc(mcode) + "</b>" : "") + '</p></div>' +
+      '</div>';
     html += '<div class="btn-links">' +
       '<a class="btn-return" href="' + RETURN_URL + esc(hit.code) + '" target="_blank" rel="noopener">主播回传</a>' +
-      '<a class="btn-dk" href="' + DK_URL + esc(hit.code) + '" target="_blank" rel="noopener">商家回传</a>' +
+      '<a class="btn-dk" href="' + DK_URL + esc(mcode || hit.code) + '" target="_blank" rel="noopener">商家回传</a>' +
       '</div>';
     html += '<div class="info-card">' +
       '<div class="info-row"><span>主播码</span><b>' + esc(hit.code) + '</b></div>' +
@@ -184,6 +190,13 @@ async function search(){
       html += '<div class="empty">暂无关联进货单<br/>档口商家回传后将自动显示在这里</div>';
     }
     box.innerHTML = html;
+    // 动态生成两码二维码（主播码 + 商家码），避免旧静态卡片图里还带着飞书死链
+    setTimeout(function(){
+      var qs = document.getElementById("qrStreamer");
+      var qm = document.getElementById("qrMerchant");
+      if (qs) { qs.innerHTML = ""; new QRCode(qs, { text: RETURN_URL + hit.code, width: 140, height: 140, colorDark: "#5E35B1", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); }
+      if (qm) { qm.innerHTML = ""; new QRCode(qm, { text: DK_URL + (mcode || hit.code), width: 140, height: 140, colorDark: "#5E35B1", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M }); }
+    }, 0);
   } else {
     box.innerHTML = '<div class="notfound">' +
       '未找到「' + esc(raw) + '」对应的主播码。<br/><br/>' +
