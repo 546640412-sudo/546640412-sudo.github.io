@@ -8,48 +8,7 @@
       "phone": "13800000001",
       "platform": "TikTok",
       "card": "cards/CG-PAN-001.png",
-      "orders": [
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "[附件上传失败：开单照片]",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "[附件上传失败：开单照片]",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "[附件上传失败：开单照片]",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "[附件上传失败：开单照片]",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        }
-      ]
+      "orders": []
     },
     {
       "code": "CG-PAN-002",
@@ -121,128 +80,7 @@
       "phone": "13958818821",
       "platform": "其他",
       "card": "cards/CG-PAN-009.png",
-      "orders": [
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "2026-08-26T00:00:00.000+08:00",
-          "discount": "35",
-          "method": "拍照",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "2026-08-26T00:00:00.000+08:00",
-          "discount": "35",
-          "method": "拍照",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "2026-08-26T00:00:00.000+08:00",
-          "discount": "35",
-          "method": "拍照",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "2026-08-26T00:00:00.000+08:00",
-          "discount": "35",
-          "method": "拍照",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        },
-        {
-          "date": "2026-08-26T00:00:00.000+08:00",
-          "discount": "35",
-          "method": "拍照",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        }
-      ]
+      "orders": []
     },
     {
       "code": "CG-PAN-010",
@@ -272,21 +110,30 @@
       "orders": []
     },
     {
-      "code": "CG-PAN-016",
-      "name": "测试同步Lily",
-      "wechat": "test_lily",
-      "phone": "19900000099",
-      "platform": "TikTok",
-      "card": "cards/CG-PAN-016.png",
-      "orders": []
-    },
-    {
       "code": "CG-PAN-017",
       "name": "牙子",
       "wechat": "",
       "phone": "15100000000",
       "platform": "TikTok",
       "card": "cards/CG-PAN-017.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-018",
+      "name": "33",
+      "wechat": "",
+      "phone": "16000000000",
+      "platform": "其他",
+      "card": "cards/CG-PAN-018.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-019",
+      "name": "拉条子",
+      "wechat": "",
+      "phone": "1700000000",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-019.png",
       "orders": []
     }
   ]
