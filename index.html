@@ -8,12 +8,12 @@
 <meta http-equiv="Expires" content="0" />
 <title>CG跨境直播 · 主播专属主页</title>
 <script>
-// 微信/浏览器强缓存穿透：入口必须带 v=3 参数才认为是最新版本
+// 微信/浏览器强缓存穿透：入口必须带 v=4 参数才认为是最新版本
 (function(){
   try {
     var url = new URL(location.href);
-    if (url.searchParams.get('v') !== '3') {
-      url.searchParams.set('v', '3');
+    if (url.searchParams.get('v') !== '4') {
+      url.searchParams.set('v', '4');
       location.replace(url.toString());
     }
   } catch(e) {}
@@ -69,7 +69,7 @@
     <p>主播专属主页 · 一码对接</p>
   </div>
   <div class="wrap">
-    <a class="enroll-banner" href="https://pan.yyfafa.com/enroll.html?v=3">＋ 新主播 / 首次对接？点此登记入驻，领取专属码</a>
+    <a class="enroll-banner" href="https://pan.yyfafa.com/enroll.html?v=4">＋ 新主播 / 首次对接？点此登记入驻，领取专属码</a>
     <div class="search">
       <input id="q" type="text" inputmode="text" autocomplete="off" placeholder="输入微信号 / 主播码 / 手机号" />
       <button id="go">查看</button>
@@ -81,8 +81,8 @@
   </div>
 <script>
 var DATA = {"enroll_form_url": "https://doc.weixin.qq.com/smartsheet/form/1_wpuhKyBwAAcmbbqssZ_-93rtRz4i-HJw_5572c9", "streamers": [{"code": "CG-PAN-001", "name": "小鹿", "wechat": "xiaolu_wx_demo", "phone": "13800000001", "platform": "TikTok", "card": "cards/CG-PAN-001.png", "orders": [{"date": "2026-08-19", "discount": "32%", "method": "", "note": "示例·档口回传演示", "attachment": null, "photo": null}]}, {"code": "CG-PAN-002", "name": "阿May", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/CG-PAN-002.png", "orders": []}, {"code": "CG-PAN-003", "name": "莉莉", "wechat": "", "phone": "", "platform": "小红书", "card": "cards/CG-PAN-003.png", "orders": []}, {"code": "CG-PAN-004", "name": "Coco", "wechat": "", "phone": "", "platform": "抖音", "card": "cards/CG-PAN-004.png", "orders": []}, {"code": "CG-PAN-005", "name": "娜娜", "wechat": "", "phone": "", "platform": "TikTok", "card": "cards/CG-PAN-005.png", "orders": []}, {"code": "CG-PAN-006", "name": "潘潘", "wechat": "Pyyake", "phone": "13757133019", "platform": "TikTok", "card": "cards/CG-PAN-006.png", "orders": []}, {"code": "CG-PAN-007", "name": "Kayla", "wechat": "18021337956", "phone": "18021337956", "platform": "其他", "card": "cards/CG-PAN-007.png", "orders": []}, {"code": "CG-PAN-008", "name": "Fernndoexportaxor", "wechat": "15021472034", "phone": "15021472034", "platform": "TikTok", "card": "cards/CG-PAN-008.png", "orders": []}, {"code": "CG-PAN-009", "name": "66", "wechat": "u d n n c y", "phone": "13958818821", "platform": "小红书", "card": "cards/CG-PAN-009.png", "orders": []}, {"code": "CG-PAN-010", "name": "Kayla", "wechat": "18021337956", "phone": "18021337856", "platform": "其他", "card": "cards/CG-PAN-010.png", "orders": []}]};
-var RETURN_URL = "https://pan.yyfafa.com/boss.html?v=3&role=streamer&code=";
-var DK_URL = "https://pan.yyfafa.com/boss.html?v=3&code=";
+var RETURN_URL = "https://pan.yyfafa.com/boss.html?v=4&role=streamer&code=";
+var DK_URL = "https://pan.yyfafa.com/boss.html?v=4&code=";
 
 // 合并本地新主播(入驻表单前端生成的,自动入搜索索引)
 try {
@@ -120,10 +120,13 @@ async function loadLive(force){
     st.innerHTML = "主播数据已同步（" + DATA.streamers.length + "人） · <a href=\"#\" onclick=\"loadLive(true);return false;\">刷新</a>";
   } catch(e){
     console.warn("live load fail", e);
+    show("status"); // 错误信息必须可见，否则用户看不到同步失败
     st.innerHTML = "实时数据同步失败：" + (e.message || "网络异常") + " · <a href=\"#\" onclick=\"loadLive(true);return false;\">重试</a><br/><span style='font-size:12px;color:#d33'>若已入驻仍查不到，请点上方「刷新」或清空微信缓存后重新进入</span>";
   }
 }
 
+function show(id){ var el=document.getElementById(id); if(el) el.classList.remove("hidden"); }
+function hide(id){ var el=document.getElementById(id); if(el) el.classList.add("hidden"); }
 function normalize(s){ return String(s||"").trim().toLowerCase().replace(/[\s\-]/g, ""); }
 function esc(s){ return String(s||"").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
 
