@@ -90,7 +90,11 @@
         <select id="st_platform"><option value="">请选择</option><option>TikTok</option><option>其他</option></select>
       </div>
       <div class="fld hidden" id="st_otherWrap"><label>其他平台名称</label><input id="st_other" placeholder="如：小红书 / 抖音"></div>
+      <div class="fld"><label>直播国家</label><input id="st_country" placeholder="如：美国 / 英国 / 马来西亚"></div>
       <div class="fld"><label>直播日期</label><input id="st_date" type="date"></div>
+      <div class="fld"><label>TK数据大屏（截图）</label><input id="st_tk" type="file" accept="image/*"><div id="st_tk_name" style="font-size:12px;color:var(--sub);margin-top:6px;"></div></div>
+      <div class="fld"><label>在线场关（截图）</label><input id="st_online" type="file" accept="image/*"><div id="st_online_name" style="font-size:12px;color:var(--sub);margin-top:6px;"></div></div>
+      <div class="fld"><label>现场照</label><input id="st_scene" type="file" accept="image/*" capture="camera"><div id="st_scene_name" style="font-size:12px;color:var(--sub);margin-top:6px;"></div></div>
       <div class="fld"><label>备注</label><textarea id="st_note" rows="2" placeholder="选填"></textarea></div>
       <button class="submit" id="stSubmit">提交回传</button>
     </div>
@@ -161,15 +165,38 @@ if(ROLE === "streamer"){
   document.getElementById("st_platform").addEventListener("change", function(){
     if(this.value === "其他") show("st_otherWrap"); else hide("st_otherWrap");
   });
-  document.getElementById("stSubmit").addEventListener("click", function(){
+  // 显示已选附件文件名
+  ["st_tk","st_online","st_scene"].forEach(function(id){
+    document.getElementById(id).addEventListener("change", function(){
+      var f = this.files && this.files[0];
+      document.getElementById(id + "_name").textContent = f ? ("已选：" + f.name) : "";
+    });
+  });
+  document.getElementById("stSubmit").addEventListener("click", async function(){
     var plat = document.getElementById("st_platform").value;
     if(!plat){ err("请选择直播平台"); return; }
     var fields = { "主播码": CODE, "直播平台": plat };
     if(plat === "其他") fields["其他平台名称"] = document.getElementById("st_other").value.trim();
+    var country = document.getElementById("st_country").value.trim();
+    if(country) fields["直播国家"] = country;
     var d = dateTs(document.getElementById("st_date").value);
     if(d) fields["直播日期"] = d;
     var n = document.getElementById("st_note").value.trim();
     if(n) fields["备注"] = n;
+    // 附件字段：TK数据大屏 / 在线场关 / 现场照
+    var atts = [
+      { id: "st_tk", field: "TK数据大屏" },
+      { id: "st_online", field: "在线场关" },
+      { id: "st_scene", field: "现场照" }
+    ];
+    for(var i=0;i<atts.length;i++){
+      var a = atts[i];
+      var file = document.getElementById(a.id).files && document.getElementById(a.id).files[0];
+      if(file){
+        try{ fields[a.field] = await readFileAsDataUrl(file); }
+        catch(e){ err("文件读取失败：" + (e.message || e)); return; }
+      }
+    }
     doSubmit("streamer_hc", fields);
   });
 } else {
