@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0" />
 <title>ZB跨境直播 · 主播入驻登记</title>
 <script>
-// 微信/浏览器强缓存穿透：入口必须带 v=6 参数才认为是最新版本
+// 微信/浏览器强缓存穿透：入口必须带 v=7 参数才认为是最新版本
 (function(){
   try {
     var url = new URL(location.href);
@@ -80,11 +80,11 @@
         <a id="goBoss" style="background:var(--purple-d);" href="#" target="_blank" rel="noopener">商家回传</a>
       </div>
       <div class="btn-links">
-        <a id="goPortal" class="btn-portal" href="https://pan.yyfafa.com/?v=6" target="_blank" rel="noopener">去门户查询</a>
+        <a id="goPortal" class="btn-portal" href="https://pan.yyfafa.com/?v=7" target="_blank" rel="noopener">去门户查询</a>
       </div>
     </div>
 
-    <a class="back" href="https://pan.yyfafa.com/?v=6">← 返回主播专属主页</a>
+    <a class="back" href="https://pan.yyfafa.com/?v=7">← 返回主播专属主页</a>
   </div>
 
 <script>
@@ -2388,8 +2388,8 @@ var qrcode = function() {
 
 </script>
 <script>
-var RETURN_FORM = "https://pan.yyfafa.com/boss.html?v=6&role=streamer";
-var DK_FORM = "https://pan.yyfafa.com/boss.html?v=6&role=merchant";
+var RETURN_FORM = "https://pan.yyfafa.com/boss.html?v=7&role=streamer";
+var DK_FORM = "https://pan.yyfafa.com/boss.html?v=7&role=merchant";
 
 function makeQr(text){
   var qr = qrcode(0, "M");
@@ -2523,7 +2523,7 @@ document.getElementById("f").addEventListener("submit", async function(e){
   document.getElementById("goStreamer").href = RETURN_FORM + "&code=" + ec;
   document.getElementById("goBoss").href = DK_FORM + "?code=" + em;
   var qLink = document.getElementById("goPortal");
-  qLink.href = "https://pan.yyfafa.com/?v=6&q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
+  qLink.href = "https://pan.yyfafa.com/?v=7&q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
 
   document.getElementById("f").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
