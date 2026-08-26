@@ -2372,9 +2372,8 @@ var qrcode = function() {
 
 </script>
 <script>
-var RETURN_FORM = "https://ckzusnk8h4.feishu.cn/share/base/shrcn5aOyKvtNAJdAPGGhPnZMKb";
-var DK_FORM = "https://ckzusnk8h4.feishu.cn/share/base/shrcnnAdaOmoXjLM8PPIEtFMQce";
-var FIELD = encodeURIComponent("主播码");
+var RETURN_FORM = "https://pan.yyfafa.com/boss.html?role=streamer";
+var DK_FORM = "https://pan.yyfafa.com/boss.html";
 
 function makeQr(text){
   var qr = qrcode(0, "M");
@@ -2385,8 +2384,8 @@ function makeQr(text){
 
 // 生成一张竖版合并卡：顶部标题 + 昵称 + 主播码 + 两个带码二维码
 function renderCard(name, code){
-  var url2 = RETURN_FORM + "?prefill_" + FIELD + "=" + encodeURIComponent(code);
-  var url3 = DK_FORM + "?prefill_" + FIELD + "=" + encodeURIComponent(code);
+  var url2 = RETURN_FORM + "&code=" + encodeURIComponent(code);
+  var url3 = DK_FORM + "?code=" + encodeURIComponent(code);
   var qr2 = makeQr(url2);
   var qr3 = makeQr(url3);
 
@@ -2503,8 +2502,8 @@ document.getElementById("f").addEventListener("submit", async function(e){
   document.getElementById("rCode").textContent = code;
   // 三个按钮带码
   var ec = encodeURIComponent(code);
-  document.getElementById("goStreamer").href = RETURN_FORM + "?prefill_" + FIELD + "=" + ec;
-  document.getElementById("goBoss").href = DK_FORM + "?prefill_" + FIELD + "=" + ec;
+  document.getElementById("goStreamer").href = RETURN_FORM + "&code=" + ec;
+  document.getElementById("goBoss").href = DK_FORM + "?code=" + ec;
   var qLink = document.getElementById("goPortal");
   qLink.href = "https://pan.yyfafa.com/?q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
 
