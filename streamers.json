@@ -7,7 +7,7 @@
       "wechat": "xiaolu_wx_demo",
       "phone": "13800000001",
       "platform": "TikTok",
-      "card": "cards/CG-PAN-001.png",
+      "card": "",
       "orders": []
     },
     {
@@ -16,7 +16,7 @@
       "wechat": "",
       "phone": "",
       "platform": "TikTok",
-      "card": "cards/CG-PAN-002.png",
+      "card": "",
       "orders": []
     },
     {
@@ -25,7 +25,7 @@
       "wechat": "",
       "phone": "",
       "platform": "其他",
-      "card": "cards/CG-PAN-003.png",
+      "card": "",
       "orders": []
     },
     {
@@ -34,7 +34,7 @@
       "wechat": "",
       "phone": "",
       "platform": "其他",
-      "card": "cards/CG-PAN-004.png",
+      "card": "",
       "orders": []
     },
     {
@@ -43,7 +43,7 @@
       "wechat": "",
       "phone": "",
       "platform": "TikTok",
-      "card": "cards/CG-PAN-005.png",
+      "card": "",
       "orders": []
     },
     {
@@ -52,7 +52,7 @@
       "wechat": "Pyyake",
       "phone": "13757133019",
       "platform": "TikTok",
-      "card": "cards/CG-PAN-006.png",
+      "card": "",
       "orders": []
     },
     {
@@ -61,7 +61,7 @@
       "wechat": "18021337956",
       "phone": "18021337956",
       "platform": "其他",
-      "card": "cards/CG-PAN-007.png",
+      "card": "",
       "orders": []
     },
     {
@@ -70,7 +70,7 @@
       "wechat": "15021472034",
       "phone": "15021472034",
       "platform": "TikTok",
-      "card": "cards/CG-PAN-008.png",
+      "card": "",
       "orders": []
     },
     {
@@ -79,7 +79,7 @@
       "wechat": "u d n n c y",
       "phone": "13958818821",
       "platform": "其他",
-      "card": "cards/CG-PAN-009.png",
+      "card": "",
       "orders": []
     },
     {
@@ -88,7 +88,7 @@
       "wechat": "18021337956",
       "phone": "18021337856",
       "platform": "其他",
-      "card": "cards/CG-PAN-010.png",
+      "card": "",
       "orders": []
     },
     {
@@ -97,7 +97,7 @@
       "wechat": "ybdhuc",
       "phone": "13500000000",
       "platform": "其他",
-      "card": "cards/CG-PAN-011.png",
+      "card": "",
       "orders": []
     },
     {
@@ -106,7 +106,7 @@
       "wechat": "beuxbvf",
       "phone": "15000000000",
       "platform": "其他",
-      "card": "cards/CG-PAN-012.png",
+      "card": "",
       "orders": []
     }
   ]
