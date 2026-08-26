@@ -35,7 +35,9 @@
   .submit:disabled{opacity:.6;}
   .back{display:block;text-align:center;color:var(--sub);font-size:12.5px;margin-top:16px;text-decoration:none;}
   .hidden{display:none;}
-  .result{margin-top:18px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;}
+  .result{position:fixed;inset:0;background:rgba(46,32,78,0.55);display:none;align-items:center;justify-content:center;z-index:100;padding:18px;overflow-y:auto;}
+  .result:not(.hidden){display:flex;}
+  .result-box{margin-top:0;background:#fff;border-radius:20px;padding:28px 22px;width:100%;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
   .result h2{margin:0 0 4px;font-size:16px;color:var(--purple-d);}
   .code-show{font-size:32px;font-weight:800;color:var(--purple);letter-spacing:2px;margin:14px 0 8px;padding:14px;background:#F7F5FD;border-radius:12px;border:2px dashed var(--purple-l);}
   .tip{font-size:12.5px;color:var(--sub);line-height:1.7;margin-top:10px;}
@@ -69,18 +71,20 @@
     </form>
 
     <div class="result hidden" id="result">
-      <h2 id="rTitle">入驻成功，这是您的专属码</h2>
-      <div class="code-show" id="rCode">ZB-PAN-000</div>
-      <p class="tip" style="margin-top:6px;">商家码（档口扫码自动带出上方主播码）：<strong id="rMerchant">CG-DK-000</strong></p>
-      <p class="tip">请<strong>长按下方卡片保存到相册</strong>，内含主播编号 + 主播专属码 + 商家码（扫码自动带出主播码）。</p>
-      <canvas id="cardCanvas" style="display:none;"></canvas>
-      <img class="card-img" id="cardImg" style="display:none;" alt="专属码卡(含编号+两码)" />
-      <div class="btn-links">
-        <a id="goStreamer" style="background:var(--purple);" href="#" target="_blank" rel="noopener">主播回传</a>
-        <a id="goBoss" style="background:var(--purple-d);" href="#" target="_blank" rel="noopener">商家回传</a>
-      </div>
-      <div class="btn-links">
-        <a id="goPortal" class="btn-portal" href="https://pan.yyfafa.com/?v=7" target="_blank" rel="noopener">去门户查询</a>
+      <div class="result-box">
+        <h2 id="rTitle">入驻成功，这是您的专属码</h2>
+        <div class="code-show" id="rCode">ZB-PAN-000</div>
+        <p class="tip" style="margin-top:6px;">商家码（档口扫码自动带出上方主播码）：<strong id="rMerchant">CG-DK-000</strong></p>
+        <p class="tip">请<strong>长按下方卡片保存到相册</strong>，内含主播编号 + 主播专属码 + 商家码（扫码自动带出主播码）。</p>
+        <canvas id="cardCanvas" style="display:none;"></canvas>
+        <img class="card-img" id="cardImg" style="display:none;" alt="专属码卡(含编号+两码)" />
+        <div class="btn-links">
+          <a id="goStreamer" style="background:var(--purple);" href="#" target="_blank" rel="noopener">主播回传</a>
+          <a id="goBoss" style="background:var(--purple-d);" href="#" target="_blank" rel="noopener">商家回传</a>
+        </div>
+        <div class="btn-links">
+          <a id="goPortal" class="btn-portal" href="https://pan.yyfafa.com/?v=7" target="_blank" rel="noopener">去门户查询</a>
+        </div>
       </div>
     </div>
 
