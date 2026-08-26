@@ -8,12 +8,12 @@
 <meta http-equiv="Expires" content="0" />
 <title>CG跨境直播 · 扫码回传</title>
 <script>
-// 微信/浏览器强缓存穿透：入口必须带 v=4 参数才认为是最新版本
+// 微信/浏览器强缓存穿透：入口必须带 v=6 参数才认为是最新版本
 (function(){
   try {
     var url = new URL(location.href);
-    if (url.searchParams.get('v') !== '4') {
-      url.searchParams.set('v', '4');
+    if (url.searchParams.get('v') !== '6') {
+      url.searchParams.set('v', '6');
       location.replace(url.toString());
     }
   } catch(e) {}
@@ -58,8 +58,15 @@
 
     <!-- 主播码 -->
     <div class="card" style="padding:14px;">
-      <div class="code-line">本次主播码</div>
+      <div class="code-line" id="codeLabel">本次主播码</div>
       <div class="code-show" id="codeShow">CG-PAN-000</div>
+    </div>
+
+    <!-- 商家码自动预填：扫码即带出绑定主播（自动预填能力，数据源纯 KV） -->
+    <div id="merchantBox" class="card hidden" style="border-color:var(--purple);">
+      <div class="pick-tip">本商家码已自动关联以下主播</div>
+      <div id="merchantBound" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"></div>
+      <p style="font-size:12px;color:var(--sub);text-align:center;margin:10px 0 0;line-height:1.6;">配货单 / 回传将自动关联以上主播，无需手动填写。</p>
     </div>
 
     <!-- 商家回传（含本次类型，自动区分建档/日常回传） -->
@@ -119,20 +126,47 @@
       <div class="tick">✓</div>
       <h2>已提交</h2>
       <p id="okMsg">数据已进入后台，可返回或关闭本页</p>
-      <a class="back" href="javascript:location.href=location.href.split('?')[0]+'?v=4'">继续回传另一单</a>
+      <a class="back" href="javascript:location.href=location.href.split('?')[0]+'?v=6'">继续回传另一单</a>
     </div>
 
     <div id="errBox" class="err hidden"></div>
-    <a class="back" href="https://pan.yyfafa.com/?v=4">← 返回主播专属主页</a>
+    <a class="back" href="https://pan.yyfafa.com/?v=6">← 返回主播专属主页</a>
   </div>
 
 <script>
 var API = "https://api.yyfafa.com/api/submit";
+var API_MERCHANT = "https://api.yyfafa.com/api/merchant";
 var p = new URLSearchParams(location.search);
 var CODE = (p.get("code") || "").trim();
 var ROLE = (p.get("role") || "").trim();
+var MERCHANT_BOUND = [];
 
 document.getElementById("codeShow").textContent = CODE || "未识别";
+
+// 商家码：扫码自动预填绑定主播（自动预填能力；数据源纯 KV，不依赖飞书授权）
+if (ROLE === "merchant" && CODE) {
+  var cl = document.getElementById("codeLabel");
+  if (cl) cl.textContent = "本次商家码";
+  show("merchantBox");
+  fetch(API_MERCHANT + "?code=" + encodeURIComponent(CODE) + "&_=" + Date.now(), { cache: "no-store" })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d && d.ok && d.bound && d.bound.length) {
+        MERCHANT_BOUND = d.bound.map(function(x){ return x.code; });
+        var box = document.getElementById("merchantBound");
+        box.innerHTML = "";
+        d.bound.forEach(function(s){
+          var chip = document.createElement("span");
+          chip.textContent = (s.name ? s.name + " · " : "") + s.code;
+          chip.style.cssText = "background:#F7F5FD;color:var(--purple-d);border:1px solid var(--purple-l);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;";
+          box.appendChild(chip);
+        });
+      } else {
+        document.getElementById("merchantBound").innerHTML = '<span style="color:var(--sub);font-size:13px;">暂无绑定主播，可在后台用 /api/bind 关联</span>';
+      }
+    })
+    .catch(function(){ /* 预填失败不阻塞，仍可手动回传 */ });
+}
 
 function show(id){ document.getElementById(id).classList.remove("hidden"); }
 function hide(id){ document.getElementById(id).classList.add("hidden"); }
@@ -151,7 +185,7 @@ function doSubmit(formType, fields){
     if(btn) btn.disabled = false;
     if(d && d.ok){
       show("okBox");
-      document.getElementById("okMsg").textContent = "主播码 " + CODE + " 已提交，数据已进入后台";
+      document.getElementById("okMsg").textContent = "提交成功，数据已进入后台（" + CODE + "）";
     } else if(d && d.need_setup){
       err("提交失败：飞书应用暂无编辑权限。请让管理员在飞书多维表格「权限设置」里，把应用「cli_aa01027d7e789bd5」加为「可编辑」协作者（一次性设置，之后永久免授权）。");
     } else {
@@ -253,7 +287,8 @@ if(ROLE === "streamer"){
   document.getElementById("bossSubmit").addEventListener("click", async function(){
     var t = document.getElementById("boss_type").value;
     if(!t){ err("请选择本次类型"); return; }
-    var fields = { "主播码": CODE, "本次类型": t };
+    var fields = { "主播码": (MERCHANT_BOUND[0] || CODE), "商家码": CODE, "本次类型": t };
+    if (MERCHANT_BOUND.length) fields["关联主播"] = MERCHANT_BOUND.join(", ");
     if(t === "首次建档"){
       var name = document.getElementById("jd_name").value.trim();
       if(!name){ err("请填写商铺名称"); return; }
