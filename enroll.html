@@ -7,6 +7,18 @@
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
 <title>CG跨境直播 · 主播入驻登记</title>
+<script>
+// 微信/浏览器强缓存穿透：入口必须带 v=3 参数才认为是最新版本
+(function(){
+  try {
+    var url = new URL(location.href);
+    if (url.searchParams.get('v') !== '3') {
+      url.searchParams.set('v', '3');
+      location.replace(url.toString());
+    }
+  } catch(e) {}
+})();
+</script>
 <style>
   :root{ --purple:#7C4DFF; --purple-d:#5E35B1; --purple-l:#E2D8FF; --bg:#F7F5FD; --ink:#2E204E; --sub:#9684C4; --line:#ECE7F7; }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -67,11 +79,11 @@
         <a id="goBoss" style="background:var(--purple-d);" href="#" target="_blank" rel="noopener">商家回传</a>
       </div>
       <div class="btn-links">
-        <a id="goPortal" class="btn-portal" href="https://pan.yyfafa.com/" target="_blank" rel="noopener">去门户查询</a>
+        <a id="goPortal" class="btn-portal" href="https://pan.yyfafa.com/?v=3" target="_blank" rel="noopener">去门户查询</a>
       </div>
     </div>
 
-    <a class="back" href="https://pan.yyfafa.com/">← 返回主播专属主页</a>
+    <a class="back" href="https://pan.yyfafa.com/?v=3">← 返回主播专属主页</a>
   </div>
 
 <script>
@@ -2375,8 +2387,8 @@ var qrcode = function() {
 
 </script>
 <script>
-var RETURN_FORM = "https://pan.yyfafa.com/boss.html?v=2&role=streamer";
-var DK_FORM = "https://pan.yyfafa.com/boss.html?v=2";
+var RETURN_FORM = "https://pan.yyfafa.com/boss.html?v=3&role=streamer";
+var DK_FORM = "https://pan.yyfafa.com/boss.html?v=3";
 
 function makeQr(text){
   var qr = qrcode(0, "M");
@@ -2508,7 +2520,7 @@ document.getElementById("f").addEventListener("submit", async function(e){
   document.getElementById("goStreamer").href = RETURN_FORM + "&code=" + ec;
   document.getElementById("goBoss").href = DK_FORM + "?code=" + ec;
   var qLink = document.getElementById("goPortal");
-  qLink.href = "https://pan.yyfafa.com/?v=2&q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
+  qLink.href = "https://pan.yyfafa.com/?v=3&q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
 
   document.getElementById("f").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
