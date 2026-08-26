@@ -102,12 +102,13 @@ async function loadLive(){
 function normalize(s){ return (s||"").trim().toLowerCase(); }
 function esc(s){ return String(s||"").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
 
+function fileUrl(u){ return u ? "https://api.yyfafa.com/api/file?u=" + encodeURIComponent(u) : ""; }
 function orderHtml(o){
   var h = '<div class="order-h">直播日期 ' + esc(o.date||"-") + '　<span class="disc">折扣 ' + esc(o.discount||"-") + '</span></div>';
   if(o.method) h += '<div class="order-line"><b>回传方式</b>' + esc(o.method) + '</div>';
   if(o.note)   h += '<div class="order-line"><b>备注</b>' + esc(o.note) + '</div>';
-  if(o.attachment) h += '<a class="order-link" href="' + esc(o.attachment) + '" target="_blank" rel="noopener">查看配货单</a>';
-  if(o.photo) h += '<img class="order-photo" src="' + esc(o.photo) + '" alt="开单照片" />';
+  if(o.attachment) h += '<a class="order-link" href="' + esc(fileUrl(o.attachment)) + '" target="_blank" rel="noopener">查看配货单</a>';
+  if(o.photo) h += '<img class="order-photo" src="' + esc(fileUrl(o.photo)) + '" alt="开单照片" />';
   return '<div class="order">' + h + '</div>';
 }
 
