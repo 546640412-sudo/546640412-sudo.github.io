@@ -1,5 +1,5 @@
 {
-  "enroll_form_url": "https://pan.yyfafa.com/enroll.html",
+  "enroll_form_url": "https://ckzusnk8h4.feishu.cn/share/base/shrcnMkKbTVQR56rIFAGPriKSjc",
   "streamers": [
     {
       "code": "CG-PAN-001",
@@ -7,7 +7,7 @@
       "wechat": "xiaolu_wx_demo",
       "phone": "13800000001",
       "platform": "TikTok",
-      "card": "",
+      "card": "cards/CG-PAN-001.png",
       "orders": []
     },
     {
@@ -16,7 +16,7 @@
       "wechat": "",
       "phone": "",
       "platform": "TikTok",
-      "card": "",
+      "card": "cards/CG-PAN-002.png",
       "orders": []
     },
     {
@@ -25,7 +25,7 @@
       "wechat": "",
       "phone": "",
       "platform": "其他",
-      "card": "",
+      "card": "cards/CG-PAN-003.png",
       "orders": []
     },
     {
@@ -34,7 +34,7 @@
       "wechat": "",
       "phone": "",
       "platform": "其他",
-      "card": "",
+      "card": "cards/CG-PAN-004.png",
       "orders": []
     },
     {
@@ -43,7 +43,7 @@
       "wechat": "",
       "phone": "",
       "platform": "TikTok",
-      "card": "",
+      "card": "cards/CG-PAN-005.png",
       "orders": []
     },
     {
@@ -52,7 +52,7 @@
       "wechat": "Pyyake",
       "phone": "13757133019",
       "platform": "TikTok",
-      "card": "",
+      "card": "cards/CG-PAN-006.png",
       "orders": []
     },
     {
@@ -61,7 +61,7 @@
       "wechat": "18021337956",
       "phone": "18021337956",
       "platform": "其他",
-      "card": "",
+      "card": "cards/CG-PAN-007.png",
       "orders": []
     },
     {
@@ -70,7 +70,7 @@
       "wechat": "15021472034",
       "phone": "15021472034",
       "platform": "TikTok",
-      "card": "",
+      "card": "cards/CG-PAN-008.png",
       "orders": []
     },
     {
@@ -79,7 +79,7 @@
       "wechat": "u d n n c y",
       "phone": "13958818821",
       "platform": "其他",
-      "card": "",
+      "card": "cards/CG-PAN-009.png",
       "orders": []
     },
     {
@@ -88,7 +88,7 @@
       "wechat": "18021337956",
       "phone": "18021337856",
       "platform": "其他",
-      "card": "",
+      "card": "cards/CG-PAN-010.png",
       "orders": []
     },
     {
@@ -97,7 +97,7 @@
       "wechat": "ybdhuc",
       "phone": "13500000000",
       "platform": "其他",
-      "card": "",
+      "card": "cards/CG-PAN-011.png",
       "orders": []
     },
     {
@@ -106,7 +106,25 @@
       "wechat": "beuxbvf",
       "phone": "15000000000",
       "platform": "其他",
-      "card": "",
+      "card": "cards/CG-PAN-012.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-016",
+      "name": "测试同步Lily",
+      "wechat": "test_lily",
+      "phone": "19900000099",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-016.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-017",
+      "name": "牙子",
+      "wechat": "",
+      "phone": "15100000000",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-017.png",
       "orders": []
     }
   ]
