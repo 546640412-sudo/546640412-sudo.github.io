@@ -47,35 +47,36 @@
       <div class="code-show" id="codeShow">CG-PAN-000</div>
     </div>
 
-    <!-- 商家二选一 -->
-    <div id="bossPick" class="hidden">
-      <div class="pick-tip">请选择本次操作</div>
-      <div class="btns">
-        <button class="btn btn-jd" id="btnJd">首次建档<small>第一次合作 · 填档口资料</small></button>
-        <button class="btn btn-hc" id="btnHc">日常回传<small>已建档 · 传开单/表格</small></button>
+    <!-- 商家回传（含本次类型，自动区分建档/日常回传） -->
+    <div id="bossForm" class="card hidden">
+      <div class="pick-tip">档口回传</div>
+      <div class="fld"><label>本次类型</label>
+        <select id="boss_type">
+          <option value="">请选择</option>
+          <option value="首次建档">首次建档（第一次合作 · 填档口资料）</option>
+          <option value="日常回传">日常回传（已建档 · 传开单/表格）</option>
+        </select>
       </div>
-    </div>
 
-    <!-- 商家建档表单 -->
-    <div id="jdForm" class="card hidden">
-      <div class="pick-tip">档口建档</div>
-      <div class="fld"><label>商铺名称</label><input id="jd_name" placeholder="如：如升珠宝"></div>
-      <div class="fld"><label>地址+档口号</label><input id="jd_addr" placeholder="如：国际商贸城六区一楼3街 4单元71753"></div>
-      <div class="fld"><label>联系方式</label><input id="jd_phone" inputmode="numeric" placeholder="手机号"></div>
-      <div class="fld"><label>主营类目</label><input id="jd_cat" placeholder="如：珠宝饰品"></div>
-      <button class="submit" id="jdSubmit">提交建档</button>
-    </div>
-
-    <!-- 商家回传表单 -->
-    <div id="hcForm" class="card hidden">
-      <div class="pick-tip">日常回传</div>
-      <div class="fld"><label>直播日期</label><input id="hc_date" type="date"></div>
-      <div class="fld"><label>折扣比例</label><input id="hc_discount" placeholder="如：30%"></div>
-      <div class="fld"><label>回传方式</label>
-        <select id="hc_method"><option value="">请选择</option><option>导入</option><option>拍照</option></select>
+      <!-- 建档字段 -->
+      <div id="jdFields" class="hidden">
+        <div class="fld"><label>商铺名称</label><input id="jd_name" placeholder="如：如升珠宝"></div>
+        <div class="fld"><label>地址+档口号</label><input id="jd_addr" placeholder="如：国际商贸城六区一楼3街 4单元71753"></div>
+        <div class="fld"><label>联系方式</label><input id="jd_phone" inputmode="numeric" placeholder="手机号"></div>
+        <div class="fld"><label>主营类目</label><input id="jd_cat" placeholder="如：珠宝饰品"></div>
       </div>
-      <div class="fld"><label>备注</label><textarea id="hc_note" rows="2" placeholder="选填"></textarea></div>
-      <button class="submit" id="hcSubmit">提交回传</button>
+
+      <!-- 日常回传字段 -->
+      <div id="hcFields" class="hidden">
+        <div class="fld"><label>直播日期</label><input id="hc_date" type="date"></div>
+        <div class="fld"><label>折扣比例</label><input id="hc_discount" placeholder="如：30%"></div>
+        <div class="fld"><label>回传方式</label>
+          <select id="hc_method"><option value="">请选择</option><option>导入</option><option>拍照</option></select>
+        </div>
+        <div class="fld"><label>备注</label><textarea id="hc_note" rows="2" placeholder="选填"></textarea></div>
+      </div>
+
+      <button class="submit" id="bossSubmit">提交</button>
     </div>
 
     <!-- 主播回传表单 -->
@@ -159,31 +160,35 @@ if(ROLE === "streamer"){
     doSubmit("streamer_hc", fields);
   });
 } else {
-  show("bossPick");
-  document.getElementById("btnJd").addEventListener("click", function(){
-    hide("bossPick"); show("jdForm");
+  show("bossForm");
+  document.getElementById("boss_type").addEventListener("change", function(){
+    var v = this.value;
+    if(v === "首次建档"){ show("jdFields"); hide("hcFields"); }
+    else if(v === "日常回传"){ show("hcFields"); hide("jdFields"); }
+    else { hide("jdFields"); hide("hcFields"); }
   });
-  document.getElementById("btnHc").addEventListener("click", function(){
-    hide("bossPick"); show("hcForm");
-  });
-  document.getElementById("jdSubmit").addEventListener("click", function(){
-    var name = document.getElementById("jd_name").value.trim();
-    if(!name){ err("请填写商铺名称"); return; }
-    var fields = { "主播码": CODE, "商铺名称": name };
-    var a = document.getElementById("jd_addr").value.trim(); if(a) fields["地址档口号"] = a;
-    var ph = document.getElementById("jd_phone").value.trim(); if(ph) fields["联系方式"] = ph;
-    var c = document.getElementById("jd_cat").value.trim(); if(c) fields["主营类目"] = c;
-    doSubmit("boss_jd", fields);
-  });
-  document.getElementById("hcSubmit").addEventListener("click", function(){
-    var m = document.getElementById("hc_method").value;
-    if(!m){ err("请选择回传方式"); return; }
-    var fields = { "主播码": CODE, "回传方式": m };
-    var d = dateTs(document.getElementById("hc_date").value);
-    if(d) fields["直播日期"] = d;
-    var dis = document.getElementById("hc_discount").value.trim(); if(dis) fields["折扣比例"] = dis;
-    var n = document.getElementById("hc_note").value.trim(); if(n) fields["备注"] = n;
-    doSubmit("boss_hc", fields);
+  document.getElementById("bossSubmit").addEventListener("click", function(){
+    var t = document.getElementById("boss_type").value;
+    if(!t){ err("请选择本次类型"); return; }
+    var fields = { "主播码": CODE, "本次类型": t };
+    if(t === "首次建档"){
+      var name = document.getElementById("jd_name").value.trim();
+      if(!name){ err("请填写商铺名称"); return; }
+      fields["商铺名称"] = name;
+      var a = document.getElementById("jd_addr").value.trim(); if(a) fields["地址档口号"] = a;
+      var ph = document.getElementById("jd_phone").value.trim(); if(ph) fields["联系方式"] = ph;
+      var c = document.getElementById("jd_cat").value.trim(); if(c) fields["主营类目"] = c;
+      doSubmit("boss_jd", fields);
+    } else {
+      var m = document.getElementById("hc_method").value;
+      if(!m){ err("请选择回传方式"); return; }
+      fields["回传方式"] = m;
+      var d = dateTs(document.getElementById("hc_date").value);
+      if(d) fields["直播日期"] = d;
+      var dis = document.getElementById("hc_discount").value.trim(); if(dis) fields["折扣比例"] = dis;
+      var n = document.getElementById("hc_note").value.trim(); if(n) fields["备注"] = n;
+      doSubmit("boss_hc", fields);
+    }
   });
 }
 </script>
