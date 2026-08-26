@@ -18,9 +18,9 @@ LEDGER_TABLE = "tblvh3hUiZc5bgCa"      # 主播码台账
 DK_TABLE = "tbll1Bk6HqJAzyd6"         # 档口回传表
 MERCHANT_TABLE = "tblciaiN4cnQE5gZ"   # 商户档案
 
-RETURN_URL = "https://ckzusnk8h4.feishu.cn/share/base/shrcn5aOyKvtNAJdAPGGhPnZMKb"
-DK_URL = "https://ckzusnk8h4.feishu.cn/share/base/shrcnnAdaOmoXjLM8PPIEtFMQce"
-ENROLL_URL = "https://ckzusnk8h4.feishu.cn/share/base/shrcnMkKbTVQR56rIFAGPriKSjc"
+RETURN_URL = "https://pan.yyfafa.com/boss.html?role=streamer"
+DK_URL = "https://pan.yyfafa.com/boss.html"
+ENROLL_URL = "https://pan.yyfafa.com/enroll.html"
 
 import urllib.request
 
@@ -115,9 +115,9 @@ def main():
     os.makedirs("cards", exist_ok=True)
     for s in streamers:
         code = s["code"]
-        qrcode.make(RETURN_URL + "?prefill_" + FIELD + "=" + code).save(
+        qrcode.make(RETURN_URL + "&code=" + code).save(
             "cards/qr-%s-return.png" % code)
-        qrcode.make(DK_URL + "?prefill_" + FIELD + "=" + code).save(
+        qrcode.make(DK_URL + "?code=" + code).save(
             "cards/qr-%s-dk.png" % code)
 
     # 4) 商户档案
