@@ -121,7 +121,7 @@ async function loadLive(force){
   } catch(e){
     console.warn("live load fail", e);
     show("status"); // 错误信息必须可见，否则用户看不到同步失败
-    st.innerHTML = "实时数据同步失败：" + (e.message || "网络异常") + " · <a href=\"#\" onclick=\"loadLive(true);return false;\">重试</a><br/><span style='font-size:12px;color:#d33'>若已入驻仍查不到，请点上方「刷新」或清空微信缓存后重新进入</span>";
+    st.innerHTML = "实时数据同步失败：" + (e.message || "网络异常") + " · <a href=\"#\" onclick=\"loadLive(true);return false;\">重试</a><br/><span style='font-size:12px;color:#d33'>若刚入驻仍查不到，请在飞书多维表格权限设置中把应用「cli_aa01027d7e789bd5」加为「可编辑」协作者（一次性），之后永久免授权。</span>";
   }
 }
 
