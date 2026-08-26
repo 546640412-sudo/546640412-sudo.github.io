@@ -1,6 +1,8 @@
 {
   "merchants": [
     {
+      "code": "",
+      "seq": "",
       "name": "如升珠宝",
       "address": "国际商贸城六区一楼3街 4单元71753",
       "category": "珠宝饰品",
@@ -8,6 +10,8 @@
       "contact_phone": "18267049386"
     },
     {
+      "code": "",
+      "seq": "",
       "name": "fasola家居",
       "address": "国际商贸城六区二楼3街 4单元72771 72750",
       "category": "珠宝饰品",
@@ -15,6 +19,8 @@
       "contact_phone": "18072466690"
     },
     {
+      "code": "",
+      "seq": "",
       "name": "欧蒂娜珠宝",
       "address": "国际商贸城六区一楼3街 4单元71758",
       "category": "珠宝饰品",
