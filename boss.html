@@ -8,12 +8,12 @@
 <meta http-equiv="Expires" content="0" />
 <title>ZB跨境直播 · 扫码回传</title>
 <script>
-// 微信/浏览器强缓存穿透：入口必须带 v=7 参数才认为是最新版本
+// 微信/浏览器强缓存穿透：入口必须带 v=8 参数才认为是最新版本
 (function(){
   try {
     var url = new URL(location.href);
-    if (url.searchParams.get('v') !== '6') {
-      url.searchParams.set('v', '6');
+    if (url.searchParams.get('v') !== '8') {
+      url.searchParams.set('v', '8');
       location.replace(url.toString());
     }
   } catch(e) {}
@@ -128,12 +128,12 @@
         <div class="tick">✓</div>
         <h2>已提交</h2>
         <p id="okMsg">数据已进入后台，可返回或关闭本页</p>
-        <a class="back" href="javascript:location.href=location.href.split('?')[0]+'?v=7'">继续回传另一单</a>
+        <a class="back" href="javascript:location.href=location.href.split('?')[0]+'?v=8'">继续回传另一单</a>
       </div>
     </div>
 
     <div id="errBox" class="err hidden"></div>
-    <a class="back" href="https://pan.yyfafa.com/?v=7">← 返回主播专属主页</a>
+    <a class="back" href="https://pan.yyfafa.com/?v=8">← 返回主播专属主页</a>
   </div>
 
 <script>
