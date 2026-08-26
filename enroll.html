@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="0" />
-<title>CG跨境直播 · 主播入驻登记</title>
+<title>ZB跨境直播 · 主播入驻登记</title>
 <script>
 // 微信/浏览器强缓存穿透：入口必须带 v=6 参数才认为是最新版本
 (function(){
@@ -48,7 +48,7 @@
 </style>
 </head>
 <body>
-  <div class="topbar"><h1>CG跨境直播</h1><p>主播入驻登记 · 自动领取专属码</p></div>
+  <div class="topbar"><h1>ZB跨境直播</h1><p>主播入驻登记 · 自动领取专属码</p></div>
   <div class="wrap">
     <form class="form" id="f">
       <div class="row"><label>昵称 *</label><input name="name" required placeholder="如：小鹿" /></div>
@@ -70,7 +70,7 @@
 
     <div class="result hidden" id="result">
       <h2 id="rTitle">入驻成功，这是您的专属码</h2>
-      <div class="code-show" id="rCode">CG-PAN-000</div>
+      <div class="code-show" id="rCode">ZB-PAN-000</div>
       <p class="tip" style="margin-top:6px;">商家码（档口扫码自动带出上方主播码）：<strong id="rMerchant">CG-DK-000</strong></p>
       <p class="tip">请<strong>长按下方卡片保存到相册</strong>，内含主播编号 + 主播专属码 + 商家码（扫码自动带出主播码）。</p>
       <canvas id="cardCanvas" style="display:none;"></canvas>
@@ -2415,7 +2415,7 @@ function renderCard(name, code, mcode){
   ctx.fillStyle = "#7C4DFF"; ctx.fillRect(0,0,W,90);
   ctx.textAlign = "center";
   ctx.fillStyle = "#fff"; ctx.font = "bold 30px sans-serif";
-  ctx.fillText("CG跨境直播", W/2, 42);
+  ctx.fillText("ZB跨境直播", W/2, 42);
   ctx.fillStyle = "#E2D8FF"; ctx.font = "14px sans-serif";
   ctx.fillText("主播专属码", W/2, 68);
 
@@ -2485,7 +2485,7 @@ document.getElementById("f").addEventListener("submit", async function(e){
   var code, mcode;
   if(exist){
     code = exist.code;
-    mcode = exist.merchant_code || code.replace("CG-PAN-","CG-DK-");
+    mcode = exist.merchant_code || code.replace("ZB-PAN-","CG-DK-");
     document.getElementById("rTitle").textContent = "您已入驻过，这是您已有的专属码";
   } else {
     // 写 KV 主库（无需飞书授权，永久可用）；仅网络异常时本地兜底出码
@@ -2497,7 +2497,7 @@ document.getElementById("f").addEventListener("submit", async function(e){
       }).then(function(r){return r.json();});
       if (res && res.ok && res.code) {
         code = res.code;
-        mcode = res.merchant_code || code.replace("CG-PAN-","CG-DK-");
+        mcode = res.merchant_code || code.replace("ZB-PAN-","CG-DK-");
       } else {
         throw new Error((res && res.msg) ? res.msg : "写入失败");
       }
@@ -2505,8 +2505,8 @@ document.getElementById("f").addEventListener("submit", async function(e){
       // 网络异常兜底：本地出码（不写库，仅保证能拿到码）
       var ctr = parseInt(localStorage.getItem("cg_code_counter") || "10", 10);
       ctr += 1;
-      code = "CG-PAN-" + String(ctr).padStart(3, "0");
-      mcode = code.replace("CG-PAN-","CG-DK-");
+      code = "ZB-PAN-" + String(ctr).padStart(3, "0");
+      mcode = code.replace("ZB-PAN-","CG-DK-");
       localStorage.setItem("cg_code_counter", String(ctr));
       document.getElementById("rTitle").textContent = "专属码已生成（网络异常，稍后系统会补同步）";
     }
