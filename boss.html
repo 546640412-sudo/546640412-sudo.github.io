@@ -143,6 +143,8 @@ var API_MERCHANT = "https://api.yyfafa.com/api/merchant";
 var p = new URLSearchParams(location.search);
 var CODE = (p.get("code") || "").trim();
 var ROLE = (p.get("role") || "").trim();
+// 兜底：商家码（DK- 前缀）即使没带 role 参数，也自动按商家码识别
+if (!ROLE && CODE && CODE.toUpperCase().indexOf("DK-") === 0) ROLE = "merchant";
 var MERCHANT_BOUND = [];
 
 document.getElementById("codeShow").textContent = CODE || "未识别";
@@ -157,6 +159,10 @@ if (ROLE === "merchant" && CODE) {
     .then(function(d){
       if (d && d.ok && d.bound && d.bound.length) {
         MERCHANT_BOUND = d.bound.map(function(x){ return x.code; });
+        // 醒目显示：已自动识别对应主播码
+        var cl2 = document.getElementById("codeLabel");
+        if (cl2) cl2.textContent = "已自动识别主播码";
+        document.getElementById("codeShow").textContent = d.bound.map(function(x){ return x.code; }).join(" / ");
         var box = document.getElementById("merchantBound");
         box.innerHTML = "";
         d.bound.forEach(function(s){
