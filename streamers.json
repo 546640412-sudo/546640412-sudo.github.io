@@ -135,6 +135,24 @@
       "platform": "TikTok",
       "card": "cards/CG-PAN-019.png",
       "orders": []
+    },
+    {
+      "code": "CG-PAN-021",
+      "name": "拉拉",
+      "wechat": "",
+      "phone": "17100000000",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-021.png",
+      "orders": []
+    },
+    {
+      "code": "CG-PAN-022",
+      "name": "样子",
+      "wechat": "",
+      "phone": "18000000000",
+      "platform": "TikTok",
+      "card": "cards/CG-PAN-022.png",
+      "orders": []
     }
   ]
 }
