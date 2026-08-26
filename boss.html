@@ -64,16 +64,17 @@
       <div class="code-show" id="codeShow">ZB-PAN-000</div>
     </div>
 
-    <!-- 商家码自动预填：扫码即带出绑定主播（自动预填能力，数据源纯 KV） -->
+    <!-- 商家回传：扫码带出主播，商家用手机号识别身份并绑定该主播 -->
     <div id="merchantBox" class="card hidden" style="border-color:var(--purple);">
-      <div class="pick-tip">本商家码已自动关联以下主播</div>
+      <div class="pick-tip">本次主播已关联的商家</div>
       <div id="merchantBound" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;"></div>
-      <p style="font-size:12px;color:var(--sub);text-align:center;margin:10px 0 0;line-height:1.6;">配货单 / 回传将自动关联以上主播，无需手动填写。</p>
+      <p style="font-size:12px;color:var(--sub);text-align:center;margin:10px 0 0;line-height:1.6;">同一手机号商家扫多个主播卡，会自动逐个绑定主播，无需重复建档。</p>
     </div>
 
     <!-- 商家回传（含本次类型，自动区分建档/日常回传） -->
     <div id="bossForm" class="card hidden">
       <div class="pick-tip">档口回传</div>
+      <div class="fld"><label>手机号（识别身份 · 首次自动建档）</label><input id="mer_phone" inputmode="numeric" placeholder="*请输入手机号*"></div>
       <div class="fld"><label>本次类型</label>
         <select id="boss_type">
           <option value="">请选择</option>
@@ -86,7 +87,6 @@
       <div id="jdFields" class="hidden">
         <div class="fld"><label>商铺名称</label><input id="jd_name" placeholder="*商铺名称*"></div>
         <div class="fld"><label>地址+档口号</label><input id="jd_addr" placeholder="*地址+档口号*"></div>
-        <div class="fld"><label>联系方式</label><input id="jd_phone" inputmode="numeric" placeholder="*联系方式*"></div>
         <div class="fld"><label>主营类目</label><input id="jd_cat" placeholder="*主营类目*"></div>
       </div>
 
@@ -143,36 +143,35 @@ var API_MERCHANT = "https://api.yyfafa.com/api/merchant";
 var p = new URLSearchParams(location.search);
 var CODE = (p.get("code") || "").trim();
 var ROLE = (p.get("role") || "").trim();
-// 兜底：商家码（DK- 前缀）即使没带 role 参数，也自动按商家码识别
-if (!ROLE && CODE && CODE.toUpperCase().indexOf("DK-") === 0) ROLE = "merchant";
-var MERCHANT_BOUND = [];
+// 主播码 / 商家回传码都用主播码 ZB-PAN，靠 role 参数区分：streamer=主播回传，merchant=商家回传
 
 document.getElementById("codeShow").textContent = CODE || "未识别";
 
-// 商家码：扫码自动预填绑定主播（自动预填能力；数据源纯 KV，不依赖飞书授权）
+// 商家回传：扫码带来的 code = 主播码（商家扫主播卡上的"商家回传"码，绑定这个主播；商家身份用手机号识别）
 if (ROLE === "merchant" && CODE) {
   var cl = document.getElementById("codeLabel");
-  if (cl) cl.textContent = "本次商家码";
-  show("merchantBox");
-  fetch(API_MERCHANT + "?code=" + encodeURIComponent(CODE) + "&_=" + Date.now(), { cache: "no-store" })
+  if (cl) cl.textContent = "本次主播码（商家回传 · 自动绑定该主播）";
+  fetch("https://api.yyfafa.com/api/streamer?code=" + encodeURIComponent(CODE) + "&_=" + Date.now(), { cache: "no-store" })
     .then(function(r){ return r.json(); })
     .then(function(d){
-      if (d && d.ok && d.bound && d.bound.length) {
-        MERCHANT_BOUND = d.bound.map(function(x){ return x.code; });
-        // 醒目显示：已自动识别对应主播码
-        var cl2 = document.getElementById("codeLabel");
-        if (cl2) cl2.textContent = "已自动识别主播码";
-        document.getElementById("codeShow").textContent = d.bound.map(function(x){ return x.code; }).join(" / ");
-        var box = document.getElementById("merchantBound");
-        box.innerHTML = "";
-        d.bound.forEach(function(s){
-          var chip = document.createElement("span");
-          chip.textContent = (s.name ? s.name + " · " : "") + s.code;
-          chip.style.cssText = "background:#F7F5FD;color:var(--purple-d);border:1px solid var(--purple-l);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;";
-          box.appendChild(chip);
-        });
+      if (d && d.ok && d.streamer) {
+        var nm = d.streamer.name;
+        if (nm) document.getElementById("codeShow").textContent = CODE + " · " + nm;
+        // 已绑定过这个主播的商家（1:N，手机号识别）
+        if (d.merchants && d.merchants.length) {
+          show("merchantBox");
+          var box = document.getElementById("merchantBound");
+          box.innerHTML = "";
+          d.merchants.forEach(function(m){
+            var chip = document.createElement("span");
+            chip.textContent = m.name + " · " + m.phone;
+            chip.style.cssText = "background:#F7F5FD;color:var(--purple-d);border:1px solid var(--purple-l);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;";
+            box.appendChild(chip);
+          });
+        }
       } else {
-        document.getElementById("merchantBound").innerHTML = '<span style="color:var(--sub);font-size:13px;">暂无绑定主播，可在后台用 /api/bind 关联</span>';
+        var eb = document.getElementById("errBox");
+        if (eb) { eb.textContent = "⚠️ 该主播码未登记，请确认扫码来源。"; eb.classList.remove("hidden"); }
       }
     })
     .catch(function(){ /* 预填失败不阻塞，仍可手动回传 */ });
@@ -188,15 +187,17 @@ if (ROLE === "streamer" && CODE) {
       if (d && d.ok && d.streamer) {
         var nm = d.streamer.name;
         if (nm) document.getElementById("codeShow").textContent = CODE + " · " + nm;
-        if (d.merchant && d.merchant.name) {
+        if (d.merchants && d.merchants.length) {
           var mb = document.getElementById("merchantBound");
           if (mb) {
             show("merchantBox");
             mb.innerHTML = "";
-            var chip = document.createElement("span");
-            chip.textContent = "绑定商家：" + d.merchant.name + " · " + d.merchant.code;
-            chip.style.cssText = "background:#F7F5FD;color:var(--purple-d);border:1px solid var(--purple-l);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;";
-            mb.appendChild(chip);
+            d.merchants.forEach(function(m){
+              var chip = document.createElement("span");
+              chip.textContent = m.name + " · " + m.phone;
+              chip.style.cssText = "background:#F7F5FD;color:var(--purple-d);border:1px solid var(--purple-l);border-radius:20px;padding:6px 12px;font-size:13px;font-weight:600;";
+              mb.appendChild(chip);
+            });
           }
         }
       } else {
@@ -324,16 +325,16 @@ if(ROLE === "streamer"){
     document.getElementById("hcFileName").textContent = f ? ("已选：" + f.name) : "";
   });
   document.getElementById("bossSubmit").addEventListener("click", async function(){
+    var phone = document.getElementById("mer_phone").value.trim();
+    if(!phone){ err("请输入手机号（用于识别身份）"); return; }
     var t = document.getElementById("boss_type").value;
     if(!t){ err("请选择本次类型"); return; }
-    var fields = { "主播码": (MERCHANT_BOUND[0] || CODE), "商家码": CODE, "本次类型": t };
-    if (MERCHANT_BOUND.length) fields["关联主播"] = MERCHANT_BOUND.join(", ");
+    var fields = { "主播码": CODE, "商家手机号": phone, "本次类型": t };
     if(t === "首次建档"){
       var name = document.getElementById("jd_name").value.trim();
       if(!name){ err("请填写商铺名称"); return; }
       fields["商铺名称"] = name;
       var a = document.getElementById("jd_addr").value.trim(); if(a) fields["地址档口号"] = a;
-      var ph = document.getElementById("jd_phone").value.trim(); if(ph) fields["联系方式"] = ph;
       var c = document.getElementById("jd_cat").value.trim(); if(c) fields["主营类目"] = c;
       doSubmit("boss_jd", fields);
     } else {
