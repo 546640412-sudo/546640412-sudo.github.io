@@ -72,6 +72,33 @@ try {
   if (localNews.length) DATA.streamers = DATA.streamers.concat(localNews);
 } catch(e){ console.warn("merge new fail", e); }
 
+// 实时拉飞书主播码台账 + 回传表，合并进检索索引（保证新入驻主播立即可查）
+async function loadLive(){
+  try {
+    var r = await fetch("https://api.yyfafa.com/api/streamers?_=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) return;
+    var data = await r.json();
+    if (!data || !data.ok || !data.streamers) return;
+    var byCode = {};
+    DATA.streamers.forEach(function(s){ byCode[s.code] = s; });
+    data.streamers.forEach(function(s){
+      var ex = byCode[s.code];
+      if (ex) {
+        // 实时字段优先；保留静态卡片图，实时有订单则覆盖
+        ex.name = s.name || ex.name;
+        ex.wechat = s.wechat || ex.wechat;
+        ex.phone = s.phone || ex.phone;
+        ex.platform = s.platform || ex.platform;
+        ex.status = s.status || ex.status;
+        if (s.orders && s.orders.length) ex.orders = s.orders;
+      } else {
+        DATA.streamers.push(s);
+        byCode[s.code] = s;
+      }
+    });
+  } catch(e){ console.warn("live load fail", e); }
+}
+
 function normalize(s){ return (s||"").trim().toLowerCase(); }
 function esc(s){ return String(s||"").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
 
@@ -84,7 +111,8 @@ function orderHtml(o){
   return '<div class="order">' + h + '</div>';
 }
 
-function search(){
+async function search(){
+  await loadLive(); // 每次检索前实时刷新，保证新入驻主播立即可查
   var raw = document.getElementById("q").value;
   var key = normalize(raw);
   var box = document.getElementById("result");
@@ -136,6 +164,7 @@ document.getElementById("q").addEventListener("keydown", function(e){ if(e.key==
   var p = new URLSearchParams(location.search);
   var q = p.get("q") || p.get("code");
   if(q){ document.getElementById("q").value = q; search(); }
+  else { loadLive(); }
 })();
 </script>
 </body>
