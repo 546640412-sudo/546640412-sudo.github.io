@@ -44,6 +44,8 @@
   .enroll-inline{display:inline-block;margin-top:14px;background:var(--purple);color:#fff;text-decoration:none;font-weight:700;padding:12px 20px;border-radius:10px;font-size:14px;}
   .foot{text-align:center;color:var(--sub);font-size:12px;margin-top:30px;}
   .hidden{display:none;}
+  .status{margin-top:14px;font-size:12.5px;color:var(--sub);text-align:center;}
+  .status a{color:var(--purple-d);font-weight:700;text-decoration:none;}
 </style>
 </head>
 <body>
@@ -58,6 +60,7 @@
       <button id="go">查看</button>
     </div>
     <p class="hint">已入驻的主播：输入您的<b>主播码</b>、填写资料时的<b>微信号</b>或预留<b>手机号</b>，即可查看您的一码通及关联进货单。新主播请先点上方登记。</p>
+    <div id="status" class="status hidden"></div>
     <div id="result" class="result hidden"></div>
     <p class="foot">CG跨境直播中台 · 一码一人</p>
   </div>
@@ -73,12 +76,15 @@ try {
 } catch(e){ console.warn("merge new fail", e); }
 
 // 实时拉飞书主播码台账 + 回传表，合并进检索索引（保证新入驻主播立即可查）
-async function loadLive(){
+async function loadLive(force){
+  var st = document.getElementById("status");
   try {
+    if(!force) show("status");
+    st.innerHTML = "正在同步主播数据…";
     var r = await fetch("https://api.yyfafa.com/api/streamers?_=" + Date.now(), { cache: "no-store" });
-    if (!r.ok) return;
+    if (!r.ok) throw new Error("HTTP " + r.status);
     var data = await r.json();
-    if (!data || !data.ok || !data.streamers) return;
+    if (!data || !data.ok || !data.streamers) throw new Error("返回数据异常");
     var byCode = {};
     DATA.streamers.forEach(function(s){ byCode[s.code] = s; });
     data.streamers.forEach(function(s){
@@ -96,19 +102,27 @@ async function loadLive(){
         byCode[s.code] = s;
       }
     });
-  } catch(e){ console.warn("live load fail", e); }
+    st.innerHTML = "主播数据已同步（" + DATA.streamers.length + "人） · <a href=\"#\" onclick=\"loadLive(true);return false;\">刷新</a>";
+  } catch(e){
+    console.warn("live load fail", e);
+    st.innerHTML = "实时数据同步失败：" + (e.message || "网络异常") + " · <a href=\"#\" onclick=\"loadLive(true);return false;\">重试</a>";
+  }
 }
 
-function normalize(s){ return (s||"").trim().toLowerCase(); }
+function normalize(s){ return String(s||"").trim().toLowerCase().replace(/[\s\-]/g, ""); }
 function esc(s){ return String(s||"").replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
 
 function fileUrl(u){ return u ? "https://api.yyfafa.com/api/file?u=" + encodeURIComponent(u) : ""; }
 function orderHtml(o){
   var h = '<div class="order-h">直播日期 ' + esc(o.date||"-") + '　<span class="disc">折扣 ' + esc(o.discount||"-") + '</span></div>';
   if(o.method) h += '<div class="order-line"><b>回传方式</b>' + esc(o.method) + '</div>';
+  if(o.country) h += '<div class="order-line"><b>直播国家</b>' + esc(o.country) + '</div>';
   if(o.note)   h += '<div class="order-line"><b>备注</b>' + esc(o.note) + '</div>';
   if(o.attachment) h += '<a class="order-link" href="' + esc(fileUrl(o.attachment)) + '" target="_blank" rel="noopener">查看配货单</a>';
   if(o.photo) h += '<img class="order-photo" src="' + esc(fileUrl(o.photo)) + '" alt="开单照片" />';
+  if(o.tk) h += '<img class="order-photo" src="' + esc(fileUrl(o.tk)) + '" alt="TK数据大屏" />';
+  if(o.online) h += '<img class="order-photo" src="' + esc(fileUrl(o.online)) + '" alt="在线场关" />';
+  if(o.scene) h += '<img class="order-photo" src="' + esc(fileUrl(o.scene)) + '" alt="现场照" />';
   return '<div class="order">' + h + '</div>';
 }
 
