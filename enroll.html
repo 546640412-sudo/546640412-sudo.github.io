@@ -38,12 +38,13 @@
     <form class="form" id="f">
       <div class="row"><label>昵称 *</label><input name="name" required placeholder="如：小鹿" /></div>
       <div class="row"><label>直播平台</label>
-        <select name="platform">
+        <select name="platform" id="platform">
           <option value="">请选择</option>
           <option>TikTok</option><option>抖音</option><option>小红书</option>
           <option>快手</option><option>视频号</option><option>其他</option>
         </select>
       </div>
+      <div class="row hidden" id="otherPlatformWrap"><label>其他平台名称</label><input name="other_platform" id="other_platform" placeholder="如：Instagram / 淘宝直播" /></div>
       <div class="row"><label>账号ID / 主页号</label><input name="accountId" placeholder="平台上的账号ID" /></div>
       <div class="row"><label>微信号</label><input name="wechat" placeholder="便于对接人联系" /></div>
       <div class="row"><label>手机号</label><input name="phone" inputmode="numeric" placeholder="便于查回专属码" /></div>
@@ -2431,6 +2432,12 @@ function renderCard(name, code){
   drawOne(qr3, 110, 390, 180);
 }
 
+document.getElementById("platform").addEventListener("change", function(){
+  var wrap = document.getElementById("otherPlatformWrap");
+  if(this.value === "其他"){ wrap.classList.remove("hidden"); }
+  else { wrap.classList.add("hidden"); document.getElementById("other_platform").value = ""; }
+});
+
 document.getElementById("f").addEventListener("submit", async function(e){
   e.preventDefault();
   var btn = document.getElementById("btn");
@@ -2441,6 +2448,8 @@ document.getElementById("f").addEventListener("submit", async function(e){
   var fd = new FormData(e.target);
   var payload = {};
   fd.forEach(function(v, k){ payload[k] = (v || "").toString().trim(); });
+  // 字段名对齐后端
+  if(payload.accountId){ payload.account_id = payload.accountId; delete payload.accountId; }
 
   if(!payload.name){
     errBox.textContent = "请填写昵称";
