@@ -8,12 +8,12 @@
 <meta http-equiv="Expires" content="0" />
 <title>CG跨境直播 · 扫码回传</title>
 <script>
-// 微信/浏览器强缓存穿透：入口必须带 v=3 参数才认为是最新版本
+// 微信/浏览器强缓存穿透：入口必须带 v=4 参数才认为是最新版本
 (function(){
   try {
     var url = new URL(location.href);
-    if (url.searchParams.get('v') !== '3') {
-      url.searchParams.set('v', '3');
+    if (url.searchParams.get('v') !== '4') {
+      url.searchParams.set('v', '4');
       location.replace(url.toString());
     }
   } catch(e) {}
@@ -119,11 +119,11 @@
       <div class="tick">✓</div>
       <h2>已提交</h2>
       <p id="okMsg">数据已进入后台，可返回或关闭本页</p>
-      <a class="back" href="javascript:location.href=location.href.split('?')[0]+'?v=3'">继续回传另一单</a>
+      <a class="back" href="javascript:location.href=location.href.split('?')[0]+'?v=4'">继续回传另一单</a>
     </div>
 
     <div id="errBox" class="err hidden"></div>
-    <a class="back" href="https://pan.yyfafa.com/?v=3">← 返回主播专属主页</a>
+    <a class="back" href="https://pan.yyfafa.com/?v=4">← 返回主播专属主页</a>
   </div>
 
 <script>
