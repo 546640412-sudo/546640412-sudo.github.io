@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <title>CG跨境直播 · 主播入驻登记</title>
 <style>
   :root{ --purple:#7C4DFF; --purple-d:#5E35B1; --purple-l:#E2D8FF; --bg:#F7F5FD; --ink:#2E204E; --sub:#9684C4; --line:#ECE7F7; }
@@ -2372,8 +2375,8 @@ var qrcode = function() {
 
 </script>
 <script>
-var RETURN_FORM = "https://pan.yyfafa.com/boss.html?role=streamer";
-var DK_FORM = "https://pan.yyfafa.com/boss.html";
+var RETURN_FORM = "https://pan.yyfafa.com/boss.html?v=2&role=streamer";
+var DK_FORM = "https://pan.yyfafa.com/boss.html?v=2";
 
 function makeQr(text){
   var qr = qrcode(0, "M");
@@ -2505,7 +2508,7 @@ document.getElementById("f").addEventListener("submit", async function(e){
   document.getElementById("goStreamer").href = RETURN_FORM + "&code=" + ec;
   document.getElementById("goBoss").href = DK_FORM + "?code=" + ec;
   var qLink = document.getElementById("goPortal");
-  qLink.href = "https://pan.yyfafa.com/?q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
+  qLink.href = "https://pan.yyfafa.com/?v=2&q=" + (payload.phone ? encodeURIComponent(payload.phone) : ec);
 
   document.getElementById("f").classList.add("hidden");
   document.getElementById("result").classList.remove("hidden");
