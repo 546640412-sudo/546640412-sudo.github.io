@@ -152,6 +152,8 @@ function doSubmit(formType, fields){
     if(d && d.ok){
       show("okBox");
       document.getElementById("okMsg").textContent = "主播码 " + CODE + " 已提交，数据已进入后台";
+    } else if(d && d.need_setup){
+      err("提交失败：飞书应用暂无编辑权限。请让管理员在飞书多维表格「权限设置」里，把应用「cli_aa01027d7e789bd5」加为「可编辑」协作者（一次性设置，之后永久免授权）。");
     } else {
       err("提交失败：" + ((d && d.msg) || "网络异常，请稍后重试"));
     }
