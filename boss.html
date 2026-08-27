@@ -213,8 +213,11 @@ function hide(id){ document.getElementById(id).classList.add("hidden"); }
 function err(msg){ var e=document.getElementById("errBox"); e.textContent=msg; e.classList.remove("hidden"); }
 function clearErr(){ document.getElementById("errBox").classList.add("hidden"); }
 
+var submitting = false; // 防重复提交锁
 function doSubmit(formType, fields){
+  if(submitting) return; // 已在提交中，忽略重复点击
   clearErr();
+  submitting = true;
   var btn = document.activeElement;
   if(btn) btn.disabled = true;
   fetch(API, {
@@ -222,6 +225,7 @@ function doSubmit(formType, fields){
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ form_type: formType, fields: fields })
   }).then(function(r){ return r.json(); }).then(function(d){
+    submitting = false;
     if(btn) btn.disabled = false;
     if(d && d.ok){
       show("okOverlay");
@@ -232,6 +236,7 @@ function doSubmit(formType, fields){
       err("提交失败：" + ((d && d.msg) || "网络异常，请稍后重试"));
     }
   }).catch(function(){
+    submitting = false;
     if(btn) btn.disabled = false;
     err("网络异常，提交未成功，请稍后重试");
   });
