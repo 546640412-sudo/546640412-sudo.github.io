@@ -83,6 +83,12 @@
         </select>
       </div>
 
+      <!-- 直播货盘表：上传 Excel 文件即可，内容都在表里，无需手填 -->
+      <div class="fld"><label>上传直播货盘表（Excel · 选传）</label>
+        <input id="huopan_file" type="file" accept=".xlsx,.xls,.csv">
+        <div id="huopanFileName" style="font-size:12px;color:var(--sub);margin-top:6px;"></div>
+      </div>
+
       <!-- 建档字段 -->
       <div id="jdFields" class="hidden">
         <div class="fld"><label>商铺名称</label><input id="jd_name" placeholder="*商铺名称*"></div>
@@ -329,12 +335,23 @@ if(ROLE === "streamer"){
     var f = this.files && this.files[0];
     document.getElementById("hcFileName").textContent = f ? ("已选：" + f.name) : "";
   });
+  var huopanInput = document.getElementById("huopan_file");
+  huopanInput.addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    document.getElementById("huopanFileName").textContent = f ? ("已选：" + f.name) : "";
+  });
   document.getElementById("bossSubmit").addEventListener("click", async function(){
     var phone = document.getElementById("mer_phone").value.trim();
     if(!phone){ err("请输入手机号（用于识别身份）"); return; }
     var t = document.getElementById("boss_type").value;
     if(!t){ err("请选择本次类型"); return; }
     var fields = { "主播码": CODE, "商家手机号": phone, "本次类型": t };
+    // 直播货盘表：上传 Excel 文件（内容都在表里，无需手填）
+    var huopanFile = document.getElementById("huopan_file").files && document.getElementById("huopan_file").files[0];
+    if(huopanFile){
+      try{ fields["货盘表"] = await readFileAsDataUrl(huopanFile); }
+      catch(e){ err("货盘表读取失败：" + (e.message || e)); return; }
+    }
     if(t === "首次建档"){
       var name = document.getElementById("jd_name").value.trim();
       if(!name){ err("请填写商铺名称"); return; }
