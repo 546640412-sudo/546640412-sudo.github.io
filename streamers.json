@@ -198,6 +198,15 @@
           "photo": null
         }
       ]
+    },
+    {
+      "code": "ZB-PAN-021",
+      "name": "拉拉拉",
+      "wechat": "",
+      "phone": "19000000000",
+      "platform": "TikTok",
+      "card": "cards/ZB-PAN-021.png",
+      "orders": []
     }
   ]
 }
