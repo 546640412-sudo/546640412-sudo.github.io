@@ -207,6 +207,15 @@
       "platform": "TikTok",
       "card": "cards/ZB-PAN-021.png",
       "orders": []
+    },
+    {
+      "code": "ZB-PAN-022",
+      "name": "风止何安",
+      "wechat": "s2383553761",
+      "phone": "19105813905",
+      "platform": "其他",
+      "card": "cards/ZB-PAN-022.png",
+      "orders": []
     }
   ]
 }
