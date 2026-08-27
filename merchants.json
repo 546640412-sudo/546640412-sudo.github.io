@@ -26,6 +26,24 @@
       "category": "珠宝饰品",
       "contact_name": "潘雅意",
       "contact_phone": "18368636666"
+    },
+    {
+      "code": "",
+      "seq": "",
+      "name": "佰意",
+      "address": "123456",
+      "category": "珠宝",
+      "contact_name": "",
+      "contact_phone": "13757133019"
+    },
+    {
+      "code": "",
+      "seq": "",
+      "name": "梦想家",
+      "address": "123456",
+      "category": "珠宝",
+      "contact_name": "",
+      "contact_phone": "13757133019"
     }
   ]
 }
