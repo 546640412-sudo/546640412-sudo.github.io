@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>直播数据大盘 · 潘潘专用</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#F5F6FA;--card:#fff;--ink:#1F2333;--sub:#7A7F94;--line:#ECEFF5;--purple:#534AB7;--purple-l:#EEEDFE;--blue:#378ADD;--green:#1D9E75;--coral:#D85A30;--gold:#EF9F27;--r:16px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;padding-bottom:40px;}
+.hidden{display:none!important;}
+/* 口令锁 */
+#lock{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:99;}
+.lock-box{background:var(--card);border-radius:var(--r);padding:32px 24px;width:320px;box-shadow:0 6px 24px rgba(31,35,51,.08);text-align:center;}
+.lock-box h2{font-size:18px;font-weight:600;margin-bottom:6px;}
+.lock-box p{font-size:13px;color:var(--sub);margin-bottom:18px;}
+.lock-box input{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px;text-align:center;outline:none;}
+.lock-box input:focus{border-color:var(--purple);}
+.lock-box button{margin-top:14px;width:100%;padding:12px;background:var(--purple);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;}
+/* 主看板 */
+.wrap{max-width:760px;margin:0 auto;padding:0 16px;}
+header{padding:20px 0 8px;display:flex;align-items:center;justify-content:space-between;}
+header h1{font-size:20px;font-weight:700;}
+header .seg{display:flex;background:var(--card);border-radius:20px;padding:3px;border:1px solid var(--line);}
+header .seg button{border:none;background:transparent;padding:6px 16px;border-radius:17px;font-size:13px;color:var(--sub);cursor:pointer;}
+header .seg button.on{background:var(--purple);color:#fff;font-weight:600;}
+.sub-tip{font-size:12px;color:var(--sub);margin-bottom:14px;}
+/* 指标卡片 */
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;}
+.card{background:var(--card);border-radius:var(--r);padding:18px 16px;border:1px solid var(--line);}
+.card .k{font-size:13px;color:var(--sub);}
+.card .v{font-size:30px;font-weight:700;margin-top:6px;line-height:1;}
+.card .v small{font-size:14px;font-weight:400;color:var(--sub);margin-left:2px;}
+.card .tag{display:inline-block;margin-top:8px;font-size:11px;padding:2px 8px;border-radius:8px;background:var(--purple-l);color:var(--purple);}
+.card.c-green .tag{background:#E1F5EE;color:var(--green);}
+.card.c-blue .tag{background:#E6F1FB;color:var(--blue);}
+.card.c-coral .tag{background:#FAECE7;color:var(--coral);}
+/* 图表 */
+.panel{background:var(--card);border-radius:var(--r);padding:18px 16px;border:1px solid var(--line);margin-bottom:16px;}
+.panel h3{font-size:15px;font-weight:600;margin-bottom:14px;}
+.panel h3 span{font-size:12px;color:var(--sub);font-weight:400;margin-left:6px;}
+.chart-box{position:relative;height:220px;}
+/* 排行 */
+.rank-item{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);}
+.rank-item:last-child{border-bottom:none;}
+.rank-no{width:26px;height:26px;border-radius:50%;background:var(--purple-l);color:var(--purple);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:10px;}
+.rank-no.top{background:var(--purple);color:#fff;}
+.rank-info{flex:1;min-width:0;}
+.rank-info .n{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.rank-info .m{font-size:12px;color:var(--sub);margin-top:2px;}
+.rank-val{font-size:15px;font-weight:700;color:var(--purple);flex-shrink:0;}
+.rank-val small{font-size:11px;color:var(--sub);font-weight:400;}
+.empty{text-align:center;color:var(--sub);font-size:13px;padding:24px 0;}
+footer{text-align:center;color:var(--sub);font-size:12px;margin-top:8px;}
+</style>
+</head>
+<body>
+
+<!-- 口令锁 -->
+<div id="lock">
+  <div class="lock-box">
+    <h2>数据大盘</h2>
+    <p>潘潘专用 · 请输入访问口令</p>
+    <input id="pw" type="password" placeholder="口令" onkeydown="if(event.key==='Enter')unlock()">
+    <button onclick="unlock()">进入</button>
+  </div>
+</div>
+
+<!-- 主看板 -->
+<div class="wrap hidden" id="app">
+  <header>
+    <h1>直播数据大盘</h1>
+    <div class="seg">
+      <button id="btnWeek" class="on" onclick="switchMode('week')">周</button>
+      <button id="btnMonth" onclick="switchMode('month')">月</button>
+    </div>
+  </header>
+  <div class="sub-tip" id="rangeTip"></div>
+
+  <div class="cards">
+    <div class="card"><div class="k">主播总数</div><div class="v" id="cStreamer">0</div><div class="tag">已入驻主播</div></div>
+    <div class="card c-green"><div class="k">商家总数</div><div class="v" id="cMerchant">0</div><div class="tag">档口商家</div></div>
+    <div class="card c-blue"><div class="k">回传次数</div><div class="v" id="cOrder">0</div><div class="tag">主播+商家回传</div></div>
+    <div class="card c-coral"><div class="k">货盘表</div><div class="v" id="cHuopan">0</div><div class="tag">已上传货盘 Excel</div></div>
+  </div>
+
+  <div class="panel">
+    <h3>回传趋势<span id="trendSub"></span></h3>
+    <div class="chart-box"><canvas id="trendChart"></canvas></div>
+  </div>
+
+  <div class="panel">
+    <h3>主播排行<span>按回传次数</span></h3>
+    <div id="streamerRank"></div>
+  </div>
+
+  <div class="panel">
+    <h3>商家排行<span>按绑定主播数</span></h3>
+    <div id="merchantRank"></div>
+  </div>
+
+  <footer>数据实时读取 · 仅潘潘可见</footer>
+</div>
+
+<script>
+const PASS = "cg2026";
+let RAW = null;
+let mode = "week";
+let trendChart = null;
+
+function unlock(){
+  if(document.getElementById("pw").value === PASS){
+    localStorage.setItem("pan_auth","1");
+    document.getElementById("lock").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    load();
+  } else {
+    document.getElementById("pw").value = "";
+    document.getElementById("pw").placeholder = "口令错误，请重试";
+  }
+}
+
+function switchMode(m){
+  mode = m;
+  document.getElementById("btnWeek").classList.toggle("on", m==="week");
+  document.getElementById("btnMonth").classList.toggle("on", m==="month");
+  render();
+}
+
+function fmt(n){ return (n||0).toLocaleString(); }
+
+function buildTrend(orders, m){
+  const now = new Date();
+  const n = m==="week" ? 8 : 6;
+  const buckets = [];
+  for(let i=n-1;i>=0;i--){
+    const start = new Date(now), end = new Date(now);
+    if(m==="week"){
+      const day = now.getDay()||7;
+      start.setDate(now.getDate() - i*7 - day + 1);
+      start.setHours(0,0,0,0);
+      end.setTime(start.getTime() + 7*86400000);
+    } else {
+      start.setDate(1); start.setHours(0,0,0,0);
+      start.setMonth(now.getMonth() - i);
+      end.setTime(start.getTime());
+      end.setMonth(start.getMonth() + 1);
+    }
+    const label = m==="week" ? (start.getMonth()+1)+"/"+start.getDate() : start.getFullYear()+"-"+(start.getMonth()+1);
+    let cnt=0, hp=0;
+    for(const o of orders){
+      if(!o.created_at) continue;
+      const t = new Date(o.created_at);
+      if(t>=start && t<end){ cnt++; if(o.huopan) hp++; }
+    }
+    buckets.push({label, cnt, hp});
+  }
+  return buckets;
+}
+
+function render(){
+  if(!RAW) return;
+  const d = RAW;
+  document.getElementById("cStreamer").textContent = fmt(d.totals.streamers);
+  document.getElementById("cMerchant").textContent = fmt(d.totals.merchants);
+  document.getElementById("cOrder").textContent = fmt(d.totals.orders);
+  document.getElementById("cHuopan").textContent = fmt(d.totals.huopan);
+
+  const buckets = buildTrend(d.orders, mode);
+  document.getElementById("rangeTip").textContent = mode==="week" ? "近 8 周数据" : "近 6 个月数据";
+  document.getElementById("trendSub").textContent = mode==="week" ? "按周统计" : "按月统计";
+
+  if(trendChart) trendChart.destroy();
+  const ctx = document.getElementById("trendChart").getContext("2d");
+  trendChart = new Chart(ctx, {
+    type:"bar",
+    data:{
+      labels: buckets.map(b=>b.label),
+      datasets:[
+        { label:"回传次数", data:buckets.map(b=>b.cnt), backgroundColor:"#534AB7", borderRadius:6, maxBarThickness:26 },
+        { label:"货盘表", data:buckets.map(b=>b.hp), backgroundColor:"#D85A30", borderRadius:6, maxBarThickness:26 },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ position:"top", labels:{ boxWidth:12, boxHeight:12, font:{size:12} } } },
+      scales:{
+        y:{ beginAtZero:true, ticks:{ precision:0 }, grid:{ color:"#F0F2F8" } },
+        x:{ grid:{ display:false } }
+      }
+    }
+  });
+
+  // 主播排行
+  const sr = [...d.streamers].sort((a,b)=>b.orders_count-a.orders_count).slice(0,10);
+  const srBox = document.getElementById("streamerRank");
+  if(!sr.length){ srBox.innerHTML = '<div class="empty">暂无主播数据</div>'; }
+  else {
+    srBox.innerHTML = sr.map((s,i)=>`
+      <div class="rank-item">
+        <div class="rank-no ${i<3?'top':''}">${i+1}</div>
+        <div class="rank-info"><div class="n">${esc(s.name)}</div><div class="m">${esc(s.code)} · ${esc(s.platform||'未填平台')}</div></div>
+        <div class="rank-val">${s.orders_count}<small> 次回传</small></div>
+      </div>`).join("");
+  }
+
+  // 商家排行
+  const mr = [...d.merchants].sort((a,b)=>b.bound_count-a.bound_count).slice(0,10);
+  const mrBox = document.getElementById("merchantRank");
+  if(!mr.length){ mrBox.innerHTML = '<div class="empty">暂无商家数据</div>'; }
+  else {
+    mrBox.innerHTML = mr.map((m,i)=>`
+      <div class="rank-item">
+        <div class="rank-no ${i<3?'top':''}">${i+1}</div>
+        <div class="rank-info"><div class="n">${esc(m.name)}</div><div class="m">${esc(m.code)} · ${esc(m.category||'未填类目')}</div></div>
+        <div class="rank-val">${m.bound_count}<small> 主播</small></div>
+      </div>`).join("");
+  }
+}
+
+function esc(s){ return String(s==null?"":s).replace(/[<>&"]/g, c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c])); }
+
+function load(){
+  fetch("https://api.yyfafa.com/api/dashboard?force=1")
+    .then(r=>r.json())
+    .then(d=>{ RAW = d; render(); })
+    .catch(()=>{ document.getElementById("rangeTip").textContent = "数据加载失败，请检查网络后刷新"; });
+}
+
+if(localStorage.getItem("pan_auth")==="1"){
+  document.getElementById("lock").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+  load();
+}
+</script>
+</body>
+</html>
