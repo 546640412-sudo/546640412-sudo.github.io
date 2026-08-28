@@ -83,31 +83,33 @@
         </select>
       </div>
 
-      <!-- 直播货盘表：上传 Excel 文件即可，内容都在表里，无需手填 -->
-      <div class="fld"><label>上传直播货盘表（Excel · 选传）</label>
-        <input id="huopan_file" type="file" accept=".xlsx,.xls,.csv">
-        <div id="huopanFileName" style="font-size:12px;color:var(--sub);margin-top:6px;"></div>
-      </div>
-
-      <!-- 建档字段 -->
+      <!-- 建档字段（首次建档：以下全部必填） -->
       <div id="jdFields" class="hidden">
-        <div class="fld"><label>商铺名称</label><input id="jd_name" placeholder="*商铺名称*"></div>
-        <div class="fld"><label>地址+档口号</label><input id="jd_addr" placeholder="*地址+档口号*"></div>
-        <div class="fld"><label>主营类目</label><input id="jd_cat" placeholder="*主营类目*"></div>
+        <div class="fld"><label>商铺名称 *</label><input id="jd_name" placeholder="商铺名称"></div>
+        <div class="fld"><label>地址+档口号 *</label><input id="jd_addr" placeholder="地址+档口号"></div>
+        <div class="fld"><label>主营类目 *</label><input id="jd_cat" placeholder="主营类目"></div>
+        <div class="fld"><label>门头照片 *（拍照上传，建档必备）</label>
+          <input id="jd_menphoto" type="file" accept="image/*" capture="camera">
+          <div id="jdMenphotoName" style="font-size:12px;color:var(--sub);margin-top:6px;"></div>
+        </div>
       </div>
 
-      <!-- 日常回传字段 -->
+      <!-- 日常回传字段（手机号/货盘表/回传配货单/直播日期 必填） -->
       <div id="hcFields" class="hidden">
-        <div class="fld"><label>直播日期</label><input id="hc_date" type="date"></div>
-        <div class="fld"><label>折扣比例</label><input id="hc_discount" placeholder="*折扣比例*"></div>
-        <div class="fld"><label>回传方式</label>
+        <div class="fld"><label>直播日期 *</label><input id="hc_date" type="date"></div>
+        <div class="fld"><label>上传直播货盘表（Excel）*</label>
+          <input id="huopan_file" type="file" accept=".xlsx,.xls,.csv">
+          <div id="huopanFileName" style="font-size:12px;color:var(--sub);margin-top:6px;"></div>
+        </div>
+        <div class="fld"><label>回传配货单 *</label>
           <select id="hc_method"><option value="">请选择</option><option value="导入">导入（上传开单表格/图片）</option><option value="拍照">拍照（现场开单照）</option></select>
         </div>
         <div class="fld hidden" id="hcFileWrap"><label id="hcFileLabel">开单照片</label>
           <input id="hc_file" type="file" accept="image/*">
           <div id="hcFileName" style="font-size:12px;color:var(--sub);margin-top:6px;"></div>
         </div>
-        <div class="fld"><label>备注</label><textarea id="hc_note" rows="2" placeholder="*备注*"></textarea></div>
+        <div class="fld"><label>折扣比例</label><input id="hc_discount" placeholder="折扣比例"></div>
+        <div class="fld"><label>备注</label><textarea id="hc_note" rows="2" placeholder="备注"></textarea></div>
       </div>
 
       <button class="submit" id="bossSubmit">提交</button>
@@ -135,6 +137,13 @@
         <div class="tick">✓</div>
         <h2>已提交</h2>
         <p id="okMsg">数据已进入后台，可返回或关闭本页</p>
+        <!-- 首次建档后展示专属日常回传入口（手机号自动带入，下次免填） -->
+        <div id="merReturnBox" class="hidden" style="margin-top:14px;padding:14px;background:#F7F5FD;border-radius:12px;text-align:left;">
+          <div style="font-size:13px;font-weight:700;color:var(--purple-d);margin-bottom:6px;">📌 保存你的专属日常回传入口</div>
+          <div style="font-size:12px;color:var(--sub);line-height:1.6;margin-bottom:8px;">以后日常回传直接打开这个链接，手机号自动带好，不用再填。</div>
+          <input id="merReturnLink" readonly style="width:100%;border:1px solid var(--purple-l);border-radius:10px;padding:9px 10px;font-size:11px;color:var(--ink);background:#fff;">
+          <button id="merCopyBtn" style="margin-top:8px;width:100%;background:var(--purple);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;">复制回传入口</button>
+        </div>
         <a class="back" href="javascript:location.href=location.href.split('?')[0]+'?v=9'">继续回传另一单</a>
       </div>
     </div>
@@ -183,6 +192,27 @@ if (ROLE === "merchant" && CODE) {
     .catch(function(){ /* 预填失败不阻塞，仍可手动回传 */ });
 }
 
+// 手机号预填：商家扫专属日常回传入口（带 ?mer=手机号）时自动带入并锁定
+var merParam = (p.get("mer") || "").trim();
+if (merParam && ROLE !== "streamer") {
+  var mp = document.getElementById("mer_phone");
+  if (mp) {
+    mp.value = merParam;
+    mp.setAttribute("readonly", "readonly");
+    mp.classList.add("ro");
+    var tip = document.createElement("div");
+    tip.id = "merPrefillTip";
+    tip.style.cssText = "font-size:12px;color:var(--purple-d);margin-top:4px;";
+    tip.innerHTML = "已识别商家手机号（专属回传入口带入）· <a href='#' id='merClear' style='color:var(--sub);'>重新输入</a>";
+    mp.parentNode.appendChild(tip);
+    document.getElementById("merClear").addEventListener("click", function(e){
+      e.preventDefault();
+      mp.value = ""; mp.removeAttribute("readonly"); mp.classList.remove("ro");
+      if (tip.parentNode) tip.parentNode.removeChild(tip);
+    });
+  }
+}
+
 // 主播码：扫码自动校验并预填本人信息（自动预填能力；数据源纯 KV，不依赖飞书授权）
 if (ROLE === "streamer" && CODE) {
   var sl = document.getElementById("codeLabel");
@@ -220,7 +250,7 @@ function err(msg){ var e=document.getElementById("errBox"); e.textContent=msg; e
 function clearErr(){ document.getElementById("errBox").classList.add("hidden"); }
 
 var submitting = false; // 防重复提交锁
-function doSubmit(formType, fields){
+function doSubmit(formType, fields, onOk){
   if(submitting) return; // 已在提交中，忽略重复点击
   clearErr();
   submitting = true;
@@ -236,6 +266,7 @@ function doSubmit(formType, fields){
     if(d && d.ok){
       show("okOverlay");
       document.getElementById("okMsg").textContent = "提交成功，数据已进入后台（" + CODE + "）";
+      if(onOk) onOk();
     } else if(d && d.need_setup){
       err("提交失败：飞书应用暂无编辑权限。请让管理员在飞书多维表格「权限设置」里，把应用「cli_aa01027d7e789bd5」加为「可编辑」协作者（一次性设置，之后永久免授权）。");
     } else {
@@ -246,6 +277,15 @@ function doSubmit(formType, fields){
     if(btn) btn.disabled = false;
     err("网络异常，提交未成功，请稍后重试");
   });
+}
+
+// 首次建档成功后：展示专属日常回传入口（手机号自动带入，下次免填）
+function showMerReturnLink(phone){
+  var box = document.getElementById("merReturnBox");
+  if(!box) return;
+  var link = location.origin + location.pathname + "?v=9&role=merchant&code=" + encodeURIComponent(CODE) + "&mer=" + encodeURIComponent(phone);
+  document.getElementById("merReturnLink").value = link;
+  box.classList.remove("hidden");
 }
 
 function dateTs(v){
@@ -340,41 +380,62 @@ if(ROLE === "streamer"){
     var f = this.files && this.files[0];
     document.getElementById("huopanFileName").textContent = f ? ("已选：" + f.name) : "";
   });
+  var jdMenphotoInput = document.getElementById("jd_menphoto");
+  if (jdMenphotoInput) jdMenphotoInput.addEventListener("change", function(){
+    var f = this.files && this.files[0];
+    document.getElementById("jdMenphotoName").textContent = f ? ("已选：" + f.name) : "";
+  });
+  var merCopyBtn = document.getElementById("merCopyBtn");
+  if (merCopyBtn) merCopyBtn.addEventListener("click", function(){
+    var link = document.getElementById("merReturnLink").value;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(function(){ merCopyBtn.textContent = "已复制 ✓"; setTimeout(function(){ merCopyBtn.textContent = "复制回传入口"; }, 2000); });
+    } else {
+      var el = document.getElementById("merReturnLink");
+      el.select(); try { document.execCommand("copy"); merCopyBtn.textContent = "已复制 ✓"; } catch(e) {}
+    }
+  });
   document.getElementById("bossSubmit").addEventListener("click", async function(){
     var phone = document.getElementById("mer_phone").value.trim();
     if(!phone){ err("请输入手机号（用于识别身份）"); return; }
     var t = document.getElementById("boss_type").value;
     if(!t){ err("请选择本次类型"); return; }
     var fields = { "主播码": CODE, "商家手机号": phone, "本次类型": t };
-    // 直播货盘表：上传 Excel 文件（内容都在表里，无需手填）
-    var huopanFile = document.getElementById("huopan_file").files && document.getElementById("huopan_file").files[0];
-    if(huopanFile){
-      try{ fields["货盘表"] = await readFileAsDataUrl(huopanFile); }
-      catch(e){ err("货盘表读取失败：" + (e.message || e)); return; }
-    }
     if(t === "首次建档"){
+      // 首次建档：所有模块必填（手机号/商铺名称/地址档口号/主营类目/门头照片）
       var name = document.getElementById("jd_name").value.trim();
       if(!name){ err("请填写商铺名称"); return; }
+      var a = document.getElementById("jd_addr").value.trim();
+      if(!a){ err("请填写地址+档口号"); return; }
+      var c = document.getElementById("jd_cat").value.trim();
+      if(!c){ err("请填写主营类目"); return; }
+      var menFile = document.getElementById("jd_menphoto").files && document.getElementById("jd_menphoto").files[0];
+      if(!menFile){ err("请上传门头照片（建档必备）"); return; }
       fields["商铺名称"] = name;
-      var a = document.getElementById("jd_addr").value.trim(); if(a) fields["地址档口号"] = a;
-      var c = document.getElementById("jd_cat").value.trim(); if(c) fields["主营类目"] = c;
-      doSubmit("boss_jd", fields);
+      fields["地址档口号"] = a;
+      fields["主营类目"] = c;
+      try{ fields["门头照片"] = await readFileAsDataUrl(menFile); }
+      catch(e){ err("门头照片读取失败：" + (e.message || e)); return; }
+      doSubmit("boss_jd", fields, function(){ showMerReturnLink(phone); });
     } else {
+      // 日常回传：手机号(已校验) / 货盘表 / 回传配货单 / 直播日期 必填
+      var huopanFile = document.getElementById("huopan_file").files && document.getElementById("huopan_file").files[0];
+      if(!huopanFile){ err("请上传直播货盘表（Excel）"); return; }
+      try{ fields["货盘表"] = await readFileAsDataUrl(huopanFile); }
+      catch(e){ err("货盘表读取失败：" + (e.message || e)); return; }
       var m = document.getElementById("hc_method").value;
-      if(!m){ err("请选择回传方式"); return; }
-      fields["回传方式"] = m;
+      if(!m){ err("请选择回传配货单方式"); return; }
+      fields["回传配货单"] = m;
       var d = dateTs(document.getElementById("hc_date").value);
-      if(d) fields["直播日期"] = d;
+      if(!d){ err("请选择直播日期"); return; }
+      fields["直播日期"] = d;
       var dis = document.getElementById("hc_discount").value.trim(); if(dis) fields["折扣比例"] = dis;
       var n = document.getElementById("hc_note").value.trim(); if(n) fields["备注"] = n;
       var file = hcFileInput.files && hcFileInput.files[0];
       if(file){
         var fieldName = (m === "导入") ? "表格导入" : "开单照片";
-        try{
-          fields[fieldName] = await readFileAsDataUrl(file);
-        }catch(e){
-          err("文件读取失败：" + (e.message || e)); return;
-        }
+        try{ fields[fieldName] = await readFileAsDataUrl(file); }
+        catch(e){ err("文件读取失败：" + (e.message || e)); return; }
       }
       doSubmit("boss_hc", fields);
     }
