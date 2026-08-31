@@ -54,17 +54,17 @@
   <div class="wrap">
     <form class="form" id="f">
       <div class="row"><label>昵称 *</label><input name="name" required placeholder="如：小鹿" /></div>
-      <div class="row"><label>直播平台</label>
+      <div class="row"><label>直播平台 *</label>
         <select name="platform" id="platform">
           <option value="">请选择</option>
           <option>TikTok</option><option>抖音</option><option>小红书</option>
           <option>快手</option><option>视频号</option><option>其他</option>
         </select>
       </div>
-      <div class="row hidden" id="otherPlatformWrap"><label>其他平台名称</label><input name="other_platform" id="other_platform" placeholder="如：Instagram / 淘宝直播" /></div>
-      <div class="row"><label>账号ID / 主页号</label><input name="accountId" placeholder="平台上的账号ID" /></div>
-      <div class="row"><label>微信号</label><input name="wechat" placeholder="便于对接人联系" /></div>
-      <div class="row"><label>手机号</label><input name="phone" inputmode="numeric" placeholder="便于查回专属码" /></div>
+      <div class="row hidden" id="otherPlatformWrap"><label>其他平台名称 *</label><input name="other_platform" id="other_platform" placeholder="如：Instagram / 淘宝直播" /></div>
+      <div class="row"><label>账号ID / 主页号 *</label><input name="accountId" placeholder="平台上的账号ID" /></div>
+      <div class="row"><label>微信号 *</label><input name="wechat" placeholder="便于对接人联系" /></div>
+      <div class="row"><label>手机号 *</label><input name="phone" inputmode="numeric" placeholder="便于查回专属码" /></div>
       <div class="row"><label>备注</label><textarea name="note" rows="2" placeholder="选填"></textarea></div>
       <button class="submit" type="submit" id="btn">提交并领取专属码</button>
       <div class="err hidden" id="err"></div>
@@ -2470,8 +2470,21 @@ document.getElementById("f").addEventListener("submit", async function(e){
   // 字段名对齐后端
   if(payload.accountId){ payload.account_id = payload.accountId; delete payload.accountId; }
 
-  if(!payload.name){
-    errBox.textContent = "请填写昵称";
+  // 必填校验（备注除外：昵称/直播平台/账号ID/微信号/手机号，选"其他"时其他平台名称也必填）
+  var requiredFields = [
+    {k:"name", label:"昵称"},
+    {k:"platform", label:"直播平台"},
+    {k:"account_id", label:"账号ID / 主页号"},
+    {k:"wechat", label:"微信号"},
+    {k:"phone", label:"手机号"}
+  ];
+  var miss = null;
+  for (var i = 0; i < requiredFields.length; i++) {
+    if (!payload[requiredFields[i].k]) { miss = requiredFields[i].label; break; }
+  }
+  if (!miss && payload.platform === "其他" && !payload.other_platform) { miss = "其他平台名称"; }
+  if (miss) {
+    errBox.textContent = "请填写" + miss;
     errBox.classList.remove("hidden");
     btn.disabled = false; btn.textContent = "提交并领取专属码";
     return;
