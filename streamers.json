@@ -216,6 +216,15 @@
       "platform": "其他",
       "card": "cards/ZB-PAN-022.png",
       "orders": []
+    },
+    {
+      "code": "ZB-PAN-023",
+      "name": "小昱",
+      "wechat": "whmywzjfycs",
+      "phone": "13607649662",
+      "platform": "TikTok",
+      "card": "cards/ZB-PAN-023.png",
+      "orders": []
     }
   ]
 }
