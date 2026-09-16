@@ -80,16 +80,7 @@
       "phone": "13958818821",
       "platform": "其他",
       "card": "cards/ZB-PAN-009.png",
-      "orders": [
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        }
-      ]
+      "orders": []
     },
     {
       "code": "ZB-PAN-010",
@@ -161,16 +152,7 @@
       "phone": "18000000000",
       "platform": "TikTok",
       "card": "cards/ZB-PAN-018.png",
-      "orders": [
-        {
-          "date": "",
-          "discount": "",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        }
-      ]
+      "orders": []
     },
     {
       "code": "ZB-PAN-019",
@@ -188,16 +170,7 @@
       "phone": "18100000000",
       "platform": "TikTok",
       "card": "cards/ZB-PAN-020.png",
-      "orders": [
-        {
-          "date": "2026-08-27T00:00:00.000+08:00",
-          "discount": "32",
-          "method": "",
-          "note": "",
-          "attachment": null,
-          "photo": null
-        }
-      ]
+      "orders": []
     },
     {
       "code": "ZB-PAN-021",
